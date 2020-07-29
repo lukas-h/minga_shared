@@ -73,13 +73,17 @@ class Product {
   String image;
   List<ProductSize> sizes;
   List<ProductCondition> conditions;
-  // TODO: delay for pickup
+  int maximumDelayForPickup; // in milliseconds
+  bool superCategory;
+
   Product({
     this.selfRef,
     this.label,
     this.image,
     this.sizes,
     this.conditions,
+    this.maximumDelayForPickup,
+    this.superCategory,
   });
 
   factory Product.fromSnapshot(DocumentSnapshot snapshot) =>
