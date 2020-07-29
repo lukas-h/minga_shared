@@ -4,6 +4,5 @@
 library minga_shared;
 
 export 'models/product.dart';
-export 'models/user.dart';
-
-// TODO: Export any libraries intended for clients of this package.
+export 'services/product.dart';
+export 'blocs/product.dart';
