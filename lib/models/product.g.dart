@@ -62,32 +62,33 @@ ProductSize _$productSizeFromSnapshot(DocumentSnapshot snapshot) {
     label: snapshot.data["label"] is String
         ? snapshot.data["label"]
         : snapshot.data["label"].toString(),
-    fromGramms: snapshot.data["fromGramms"] is int
-        ? snapshot.data["fromGramms"]
-        : int.parse(snapshot.data["fromGramms"]),
-    toGramms: snapshot.data["toGramms"] is int
-        ? snapshot.data["toGramms"]
-        : int.parse(snapshot.data["toGramms"]),
+    from: snapshot.data["from"] is int
+        ? snapshot.data["from"]
+        : int.parse(snapshot.data["from"]),
+    to: snapshot.data["to"] is int
+        ? snapshot.data["to"]
+        : int.parse(snapshot.data["to"]),
+    unit: snapshot.data["unit"] is String
+        ? snapshot.data["unit"]
+        : snapshot.data["unit"].toString(),
   );
 }
 
 ProductSize _$productSizeFromMap(Map<String, dynamic> data) {
   return ProductSize(
     label: data["label"] is String ? data["label"] : data["label"].toString(),
-    fromGramms: data["fromGramms"] is int
-        ? data["fromGramms"]
-        : int.parse(data["fromGramms"]),
-    toGramms: data["toGramms"] is int
-        ? data["toGramms"]
-        : int.parse(data["toGramms"]),
+    from: data["from"] is int ? data["from"] : int.parse(data["from"]),
+    to: data["to"] is int ? data["to"] : int.parse(data["to"]),
+    unit: data["unit"] is String ? data["unit"] : data["unit"].toString(),
   );
 }
 
 Map<String, dynamic> _$productSizeToMap(ProductSize model) {
   return <String, dynamic>{
     "label": model.label,
-    "fromGramms": model.fromGramms,
-    "toGramms": model.toGramms,
+    "from": model.from,
+    "to": model.to,
+    "unit": model.unit,
   };
 }
 
@@ -96,18 +97,32 @@ ProductCondition _$productConditionFromSnapshot(DocumentSnapshot snapshot) {
     label: snapshot.data["label"] is String
         ? snapshot.data["label"]
         : snapshot.data["label"].toString(),
+    description: snapshot.data["description"] is String
+        ? snapshot.data["description"]
+        : snapshot.data["description"].toString(),
+    durationToExpiry: snapshot.data["durationToExpiry"] is int
+        ? snapshot.data["durationToExpiry"]
+        : int.parse(snapshot.data["durationToExpiry"]),
   );
 }
 
 ProductCondition _$productConditionFromMap(Map<String, dynamic> data) {
   return ProductCondition(
     label: data["label"] is String ? data["label"] : data["label"].toString(),
+    description: data["description"] is String
+        ? data["description"]
+        : data["description"].toString(),
+    durationToExpiry: data["durationToExpiry"] is int
+        ? data["durationToExpiry"]
+        : int.parse(data["durationToExpiry"]),
   );
 }
 
 Map<String, dynamic> _$productConditionToMap(ProductCondition model) {
   return <String, dynamic>{
     "label": model.label,
+    "description": model.description,
+    "durationToExpiry": model.durationToExpiry,
   };
 }
 
@@ -124,6 +139,10 @@ Product _$productFromSnapshot(DocumentSnapshot snapshot) {
         .map<ProductSize>(
             (data) => ProductSize.fromMap(Map<String, dynamic>.from(data)))
         .toList(),
+    conditions: List.castFrom(snapshot.data["conditions"])
+        .map<ProductCondition>(
+            (data) => ProductCondition.fromMap(Map<String, dynamic>.from(data)))
+        .toList(),
   );
 }
 
@@ -135,6 +154,10 @@ Product _$productFromMap(Map<String, dynamic> data) {
         .map<ProductSize>(
             (data) => ProductSize.fromMap(Map<String, dynamic>.from(data)))
         .toList(),
+    conditions: List.castFrom(data["conditions"])
+        .map<ProductCondition>(
+            (data) => ProductCondition.fromMap(Map<String, dynamic>.from(data)))
+        .toList(),
   );
 }
 
@@ -143,5 +166,6 @@ Map<String, dynamic> _$productToMap(Product model) {
     "label": model.label,
     "image": model.image,
     "sizes": model.sizes.map((data) => data.toMap()).toList(),
+    "conditions": model.conditions.map((data) => data.toMap()).toList(),
   };
 }

@@ -33,9 +33,16 @@ class ProductEntry {
 @FirestoreDocument(hasSelfRef: false)
 class ProductSize {
   String label;
-  int fromGramms;
-  int toGramms;
-  ProductSize({this.label, this.fromGramms, this.toGramms});
+  int from;
+  int to;
+  String unit;
+
+  ProductSize({
+    this.label,
+    this.from,
+    this.to,
+    this.unit,
+  });
   factory ProductSize.fromSnapshot(DocumentSnapshot snapshot) =>
       _$productSizeFromSnapshot(snapshot);
   factory ProductSize.fromMap(Map<String, dynamic> data) =>
@@ -46,7 +53,10 @@ class ProductSize {
 @FirestoreDocument(hasSelfRef: false)
 class ProductCondition {
   final String label;
-  ProductCondition({this.label});
+  String description;
+  int durationToExpiry; // milliseconds
+
+  ProductCondition({this.label, this.description, this.durationToExpiry});
   factory ProductCondition.expired() => ProductCondition(label: 'expired');
 
   factory ProductCondition.fromSnapshot(DocumentSnapshot snapshot) =>
@@ -62,11 +72,14 @@ class Product {
   String label;
   String image;
   List<ProductSize> sizes;
+  List<ProductCondition> conditions;
+  // TODO: delay for pickup
   Product({
     this.selfRef,
     this.label,
     this.image,
     this.sizes,
+    this.conditions,
   });
 
   factory Product.fromSnapshot(DocumentSnapshot snapshot) =>
