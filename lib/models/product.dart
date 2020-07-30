@@ -77,6 +77,7 @@ class Product {
   List<ProductCondition> conditions;
   int maximumDelayForPickup; // in hours
   bool superCategory;
+  Product category;
 
   Product({
     this.selfRef,
@@ -86,6 +87,7 @@ class Product {
     this.conditions,
     this.maximumDelayForPickup,
     this.superCategory,
+    this.category,
   });
 
   factory Product.create(Firestore f) => Product(
