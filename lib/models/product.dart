@@ -9,6 +9,7 @@ class ProductEntry {
   double price;
   String description;
   ProductCondition condition;
+  ProductSize size;
   DateTime expiryDate;
   final DateTime created;
   DocumentReference productRef;
@@ -18,6 +19,7 @@ class ProductEntry {
     this.price,
     this.description,
     this.condition,
+    this.size,
     this.expiryDate,
     this.created,
     this.productRef,
@@ -85,6 +87,16 @@ class Product {
     this.maximumDelayForPickup,
     this.superCategory,
   });
+
+  factory Product.create(Firestore f) => Product(
+        selfRef: f.collection('product').document(),
+        label: '',
+        image: '',
+        conditions: [],
+        maximumDelayForPickup: Duration(hours: 12).inMilliseconds,
+        sizes: [],
+        superCategory: false,
+      );
 
   factory Product.fromSnapshot(DocumentSnapshot snapshot) =>
       _$productFromSnapshot(snapshot);
