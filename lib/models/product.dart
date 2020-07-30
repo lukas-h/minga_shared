@@ -75,7 +75,7 @@ class Product {
   String image;
   List<ProductSize> sizes;
   List<ProductCondition> conditions;
-  int maximumDelayForPickup; // in milliseconds
+  int maximumDelayForPickup; // in hours
   bool superCategory;
 
   Product({
@@ -93,7 +93,7 @@ class Product {
         label: '',
         image: '',
         conditions: [],
-        maximumDelayForPickup: Duration(hours: 12).inMilliseconds,
+        maximumDelayForPickup: Duration(hours: 12).inHours,
         sizes: [],
         superCategory: false,
       );
