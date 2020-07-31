@@ -54,7 +54,7 @@ class ProductSize {
 
 @FirestoreDocument(hasSelfRef: false)
 class ProductCondition {
-  final String label;
+  String label;
   String description;
   int durationToExpiry; // milliseconds
 
@@ -77,7 +77,7 @@ class Product {
   List<ProductCondition> conditions;
   int maximumDelayForPickup; // in hours
   bool superCategory;
-  Product category;
+  DocumentReference categoryRef;
 
   Product({
     this.selfRef,
@@ -87,7 +87,7 @@ class Product {
     this.conditions,
     this.maximumDelayForPickup,
     this.superCategory,
-    this.category,
+    this.categoryRef,
   });
 
   factory Product.create(Firestore f) => Product(
