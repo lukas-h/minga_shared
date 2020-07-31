@@ -79,6 +79,11 @@ class Product {
   bool superCategory;
   DocumentReference categoryRef;
 
+  num averagePriceInCLPeso;
+  int quantity;
+  String unit;
+  num points;
+
   Product({
     this.selfRef,
     this.label,
@@ -88,6 +93,10 @@ class Product {
     this.maximumDelayForPickup,
     this.superCategory,
     this.categoryRef,
+    this.averagePriceInCLPeso,
+    this.points,
+    this.quantity,
+    this.unit,
   });
 
   factory Product.create(Firestore f) => Product(
