@@ -44,6 +44,18 @@ abstract class ProductState extends Equatable {
 
 class ProductLoadingState extends ProductState {}
 
+class ProductSuccessState extends ProductState {
+  final String message;
+
+  ProductSuccessState(this.message);
+}
+
+class ProductFailureState extends ProductState {
+  final String message;
+
+  ProductFailureState(this.message);
+}
+
 class ProductSnapshotState extends ProductState {
   final List<Product> products;
 
@@ -80,16 +92,34 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   Stream<ProductState> mapdeleteProductToState(
       DeleteProductEvent event) async* {
-    _productService.deleteProduct(event.product);
+    try {
+      await _productService.deleteProduct(event.product);
+      yield ProductSuccessState('Success deleting \'${event.product.label}\'');
+    } catch (e) {
+      yield ProductFailureState('Error deleting  \'${event.product.label}\'');
+    }
+    add(ProductLoadingEvent());
   }
 
   Stream<ProductState> mapUpdateProductToState(
       UpdateProductEvent event) async* {
-    _productService.updateProduct(event.product);
+    try {
+      await _productService.updateProduct(event.product);
+      yield ProductSuccessState('Success updating \'${event.product.label}\'');
+    } catch (e) {
+      yield ProductFailureState('Error updating \'${event.product.label}\'');
+    }
+    add(ProductLoadingEvent());
   }
 
   Stream<ProductState> _mapSetProductToState(SetProductEvent event) async* {
-    _productService.setProduct(event.product);
+    try {
+      await _productService.setProduct(event.product);
+      yield ProductSuccessState('Success creating \'${event.product.label}\'');
+    } catch (e) {
+      yield ProductFailureState('Error creating \'${event.product.label}\'');
+    }
+    add(ProductLoadingEvent());
   }
 
   @override
