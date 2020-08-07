@@ -1,7 +1,7 @@
 import 'package:firestore_annotations/firestore_annotations.dart';
 import 'package:firestore_api/firestore_api.dart';
 
-part 'user.g.dart';
+part 'user_model.g.dart';
 
 @FirestoreDocument()
 class User {

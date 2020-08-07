@@ -1,36 +1,7 @@
 import 'package:firestore_annotations/firestore_annotations.dart';
 import 'package:firestore_api/firestore_api.dart';
 
-part 'product.g.dart';
-
-@FirestoreDocument()
-class ProductEntry {
-  DocumentReference selfRef;
-  double price;
-  String description;
-  ProductCondition condition;
-  ProductSize size;
-  DateTime expiryDate;
-  final DateTime created;
-  DocumentReference productRef;
-
-  ProductEntry({
-    this.selfRef,
-    this.price,
-    this.description,
-    this.condition,
-    this.size,
-    this.expiryDate,
-    this.created,
-    this.productRef,
-  });
-
-  factory ProductEntry.fromSnapshot(DocumentSnapshot snapshot) =>
-      _$productEntryFromSnapshot(snapshot);
-  factory ProductEntry.fromMap(Map<String, dynamic> data) =>
-      _$productEntryFromMap(data);
-  Map<String, dynamic> toMap() => _$productEntryToMap(this);
-}
+part 'product_model.g.dart';
 
 @FirestoreDocument(hasSelfRef: false)
 class ProductSize {

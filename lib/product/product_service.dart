@@ -1,7 +1,7 @@
 import 'package:firestore_api/firestore_api.dart';
 
 import '../minga_shared.dart';
-import '../models/product.dart';
+import 'product_model.dart';
 
 class ProductService {
   final Firestore firestore;

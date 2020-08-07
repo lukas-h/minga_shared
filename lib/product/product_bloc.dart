@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../services/product.dart';
+import 'product_service.dart';
 
-import '../models/product.dart';
+import 'product_model.dart';
 
 abstract class ProductEvent extends Equatable {
   @override
