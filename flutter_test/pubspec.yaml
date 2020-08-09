@@ -1,19 +1,14 @@
-name: minga_shared
+name: minga_flutter_test
 description: A starting point for Dart libraries or applications.
 # version: 1.0.0
 # homepage: https://www.example.com
 
 environment:
-  sdk: ">=2.7.0 <3.0.0"
+  sdk: '>=2.7.0 <3.0.0'
 
 dependencies:
-  bloc: ^6.0.1
-  firestore_api:
-    git:
-      url: https://github.com/dartclub/firestore_dart
-      path: firestore_api
-  firestore_annotations: ^0.0.2
-  equatable: ^1.0.0
+  flutter:
+    sdk: flutter
 
 dev_dependencies:
   dartclub_lint: 0.2.1
@@ -21,6 +16,5 @@ dev_dependencies:
   bloc_test: ^7.0.0
   build_runner: ^1.5.0
   firestore_serializable: ^0.0.17+2
-
-builders:
-  firestore_serializable: any
+  firebase_auth_mocks: ^0.2.1
+  cloud_firestore_mocks: ^0.4.6+1

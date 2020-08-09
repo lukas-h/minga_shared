@@ -1,6 +1,6 @@
 import 'package:firestore_annotations/firestore_annotations.dart';
 import 'package:firestore_api/firestore_api.dart';
-import 'package:minga_shared/minga_shared.dart';
+import '../minga_shared.dart';
 
 part 'donation_model.g.dart';
 
@@ -13,7 +13,7 @@ class Donation {
   ProductCondition condition;
   ProductSize size;
 
-  // step label: step reference
+  // step label: user reference
   Map<String, DocumentReference> verificationSteps;
 
   Donation({
@@ -43,7 +43,7 @@ class VerificationStep {
   // user that is responsible for this step
   DocumentReference associatedUser;
 
-  VerificationStepLabel _label;
+  VerificationStepLabel _label; // TODO label is ignored, but shouldn't
   DateTime completed;
   get label => _label;
   VerificationStep({
