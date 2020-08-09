@@ -16,5 +16,6 @@
     - /answers/{answerId}
 - /centers/{centerId} 
     - /admins/{adminId}
+    - /inventory/{inventoryId} -> automatically created after a verification process once a donation is arrived
 
-- /
+- /offers/{offerId} -> food offers from distribution centers
