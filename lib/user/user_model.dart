@@ -4,12 +4,8 @@ import 'package:firestore_api/firestore_api.dart';
 part 'user_model.g.dart';
 
 @FirestoreDocument()
-class User {
+class MingaUser {
   DocumentReference selfRef;
-
-  @FirestoreAttribute(ignore: true)
-  List<String> roles;
-
   @FirestoreAttribute(ignore: true)
   String get label => firstName + lastName;
 
@@ -20,7 +16,7 @@ class User {
 
   String phone;
 
-  User({
+  MingaUser({
     this.selfRef,
     this.firstName,
     this.lastName,
@@ -28,20 +24,9 @@ class User {
     this.phone,
   });
 
-  factory User.fromSnapshot(DocumentSnapshot snapshot) =>
-      _$userFromSnapshot(snapshot);
-  factory User.fromMap(Map<String, dynamic> data) => _$userFromMap(data);
-  Map<String, dynamic> toMap() => _$userToMap(this);
-}
-
-@FirestoreDocument(hasSelfRef: false)
-class UserRole {
-  final String label;
-
-  UserRole({this.label});
-  factory UserRole.fromSnapshot(DocumentSnapshot snapshot) =>
-      _$userRoleFromSnapshot(snapshot);
-  factory UserRole.fromMap(Map<String, dynamic> data) =>
-      _$userRoleFromMap(data);
-  Map<String, dynamic> toMap() => _$userRoleToMap(this);
+  factory MingaUser.fromSnapshot(DocumentSnapshot snapshot) =>
+      _$mingaUserFromSnapshot(snapshot);
+  factory MingaUser.fromMap(Map<String, dynamic> data) =>
+      _$mingaUserFromMap(data);
+  Map<String, dynamic> toMap() => _$mingaUserToMap(this);
 }

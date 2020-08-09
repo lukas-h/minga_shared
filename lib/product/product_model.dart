@@ -40,22 +40,23 @@ class ProductCondition {
 }
 
 @FirestoreDocument()
-class Product {
+class ProductClass {
   DocumentReference selfRef;
   String label;
   String image;
   List<ProductSize> sizes;
   List<ProductCondition> conditions;
   int maximumDelayForPickup; // in hours
+
   bool superCategory;
-  DocumentReference categoryRef;
+  DocumentReference superCategoryRef;
 
   num averagePriceInCLPeso;
   int quantity;
   String unit;
   num points;
 
-  Product({
+  ProductClass({
     this.selfRef,
     this.label,
     this.image,
@@ -63,14 +64,14 @@ class Product {
     this.conditions,
     this.maximumDelayForPickup,
     this.superCategory,
-    this.categoryRef,
+    this.superCategoryRef,
     this.averagePriceInCLPeso,
     this.points,
     this.quantity,
     this.unit,
   });
 
-  factory Product.create(Firestore f) => Product(
+  factory ProductClass.create(Firestore f) => ProductClass(
         selfRef: f.collection('product').document(),
         label: '',
         image: '',
@@ -80,8 +81,9 @@ class Product {
         superCategory: false,
       );
 
-  factory Product.fromSnapshot(DocumentSnapshot snapshot) =>
-      _$productFromSnapshot(snapshot);
-  factory Product.fromMap(Map<String, dynamic> data) => _$productFromMap(data);
-  Map<String, dynamic> toMap() => _$productToMap(this);
+  factory ProductClass.fromSnapshot(DocumentSnapshot snapshot) =>
+      _$productClassFromSnapshot(snapshot);
+  factory ProductClass.fromMap(Map<String, dynamic> data) =>
+      _$productClassFromMap(data);
+  Map<String, dynamic> toMap() => _$productClassToMap(this);
 }

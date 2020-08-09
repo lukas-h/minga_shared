@@ -1,75 +1,36 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firestore_api/firestore_api.dart';
+import 'discussion_service.dart';
 import 'discussion_model.dart';
-
-class DiscussionBloc extends Bloc<DiscussionEvent, DiscussionState> {
-  final DiscussionItem entry;
-  DiscussionBloc(this.entry) : super(DiscussionLoading());
-
-  Stream<DiscussionState> _mapLoadingEventToState() async* {
-    try {
-      var snap = await entry.selfRef.collection('answers').getDocuments();
-      List<DiscussionItem> discussionItems = [
-        entry,
-        ...snap.documents
-            .map((DocumentSnapshot docSnap) =>
-                DiscussionItem.fromSnapshot(docSnap))
-            .toList()
-      ];
-      yield DiscussionSuccess(discussionItems);
-    } catch (e) {
-      yield DiscussionFailure();
-    }
-  }
-
-  @override
-  Stream<DiscussionState> mapEventToState(DiscussionEvent event) async* {
-    if (event is LoadDiscussion) {
-      yield DiscussionLoading();
-
-      yield* _mapLoadingEventToState();
-    }
-    if (event is CreateAnswer) {
-      await entry.selfRef
-          .collection('answers')
-          .document()
-          .setData(event.discussion.toMap());
-      add(LoadDiscussion());
-    }
-    if (event is UpdateDiscussionItem) {
-      await event.discussion.selfRef.update(event.discussion.toMap());
-      add(LoadDiscussion());
-    }
-    if (event is DeleteDiscussionItem) {
-      if (event.discussion.isEntry) {
-        await event.discussion.selfRef.delete();
-        add(LoadDiscussion());
-      }
-    }
-  }
-}
 
 abstract class DiscussionEvent {}
 
-class LoadDiscussion extends DiscussionEvent {}
+class DiscussionLoadingEvent extends DiscussionEvent {}
 
-class CreateAnswer extends DiscussionEvent {
-  final DiscussionItem discussion;
+class DiscussionSnapshotEvent extends DiscussionEvent {
+  final List<DiscussionItem> items;
 
-  CreateAnswer(this.discussion);
+  DiscussionSnapshotEvent(this.items);
 }
 
-class UpdateDiscussionItem extends DiscussionEvent {
-  final DiscussionItem discussion;
+class CreateAnswerEvent extends DiscussionEvent {
+  final DiscussionItem item;
 
-  UpdateDiscussionItem(this.discussion);
+  CreateAnswerEvent(this.item);
 }
 
-class DeleteDiscussionItem extends DiscussionEvent {
-  final DiscussionItem discussion;
+class UpdateDiscussionItemEvent extends DiscussionEvent {
+  final DiscussionItem item;
 
-  DeleteDiscussionItem(this.discussion);
+  UpdateDiscussionItemEvent(this.item);
+}
+
+class DeleteDiscussionItemEvent extends DiscussionEvent {
+  final DiscussionItem item;
+
+  DeleteDiscussionItemEvent(this.item);
 }
 
 abstract class DiscussionState extends Equatable {
@@ -77,12 +38,106 @@ abstract class DiscussionState extends Equatable {
   List<Object> get props => [];
 }
 
-class DiscussionLoading extends DiscussionState {}
+class DiscussionLoadingState extends DiscussionState {}
 
-class DiscussionSuccess extends DiscussionState {
-  final List<DiscussionItem> discussionItems;
+class DiscussionSnapshotState extends DiscussionState {
+  final List<DiscussionItem> items;
 
-  DiscussionSuccess(this.discussionItems);
+  DiscussionSnapshotState(this.items);
 }
 
-class DiscussionFailure extends DiscussionState {}
+class DiscussionSuccessState extends DiscussionState {
+  final String message;
+
+  DiscussionSuccessState(this.message);
+}
+
+class DiscussionFailureState extends DiscussionState {
+  final String message;
+
+  DiscussionFailureState(this.message);
+}
+
+class DiscussionBloc extends Bloc<DiscussionEvent, DiscussionState> {
+  final DiscussionService _discussionService;
+  StreamSubscription _subscription;
+
+  DiscussionBloc(this._discussionService) : super(DiscussionLoadingState());
+
+  Stream<DiscussionState> _mapStreamToState() async* {
+    await _subscription?.cancel();
+    _subscription = _discussionService
+        .discussionStream()
+        .listen((snapshot) => add(DiscussionSnapshotEvent(snapshot)));
+  }
+
+  Stream<DiscussionState> _mapSetItemToState(CreateAnswerEvent event) async* {
+    try {
+      await _discussionService.setAnswer(event.item);
+      yield DiscussionSuccessState('Success creating \'${event.item.label}\'');
+    } catch (e) {
+      yield DiscussionFailureState('Error creating \'${event.item.label}\'');
+    }
+    add(DiscussionLoadingEvent());
+  }
+
+  Stream<DiscussionState> _mapUpdateItemToState(
+      UpdateDiscussionItemEvent event) async* {
+    try {
+      await _discussionService.updateDiscussionItem(event.item);
+      yield DiscussionSuccessState('Success updating \'${event.item.label}\'');
+    } catch (e) {
+      yield DiscussionFailureState('Error updating \'${event.item.label}\'');
+    }
+    add(DiscussionLoadingEvent());
+  }
+
+  Stream<DiscussionState> _mapDeleteItemToState(
+      DeleteDiscussionItemEvent event) async* {
+    if (!event.item.isEntry) {
+      try {
+        await _discussionService.deleteDiscussionItem(event.item);
+        yield DiscussionSuccessState(
+            'Success deleting \'${event.item.label}\'');
+      } catch (e) {
+        yield DiscussionFailureState('Error deleting  \'${event.item.label}\'');
+      }
+      add(DiscussionLoadingEvent());
+    } else {
+      yield DiscussionFailureState('Start of discussions can not be deleted');
+    }
+  }
+
+  @override
+  Stream<DiscussionState> mapEventToState(DiscussionEvent event) async* {
+    if (event is DiscussionSnapshotEvent) {
+      yield DiscussionSnapshotState(event.items);
+    }
+
+    if (event is CreateAnswerEvent) {
+      yield* _mapSetItemToState(event);
+    }
+    if (event is UpdateDiscussionItemEvent) {
+      yield* _mapUpdateItemToState(event);
+    }
+    if (event is DeleteDiscussionItemEvent) {
+      yield* _mapDeleteItemToState(event);
+    }
+    if (event is DiscussionLoadingEvent) {
+      yield DiscussionLoadingState();
+
+      yield* _mapStreamToState();
+    }
+  }
+
+  @override
+  Future<void> close() async {
+    await _subscription.cancel();
+    return super.close();
+  }
+}
+
+class DiscussionsBloc {
+  // global discussions in the app
+  // TODO implement
+}

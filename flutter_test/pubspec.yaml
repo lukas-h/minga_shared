@@ -18,3 +18,5 @@ dev_dependencies:
   firestore_serializable: ^0.0.17+2
   firebase_auth_mocks: ^0.2.1
   cloud_firestore_mocks: ^0.4.6+1
+  minga_shared:
+    path: ..

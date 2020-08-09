@@ -8,14 +8,15 @@ class ProductService {
 
   ProductService(this.firestore);
 
-  Future<void> setProduct(Product product) =>
+  Future<void> setProduct(ProductClass product) =>
       firestore.collection('products').document().setData(product.toMap());
-  Future<void> updateProduct(Product product) =>
+  Future<void> updateProduct(ProductClass product) =>
       product.selfRef.update(product.toMap());
-  Future<void> deleteProduct(Product product) => product.selfRef.delete();
-  Stream<List<Product>> productStream() =>
+  Future<void> deleteProduct(ProductClass product) => product.selfRef.delete();
+  Stream<List<ProductClass>> productStream() =>
       firestore.collection('products').snapshots().map(
-            (snap) =>
-                snap.documents.map((doc) => Product.fromSnapshot(doc)).toList(),
+            (snap) => snap.documents
+                .map((doc) => ProductClass.fromSnapshot(doc))
+                .toList(),
           );
 }
