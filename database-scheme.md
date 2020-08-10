@@ -4,7 +4,7 @@
 ## Collections
 
 - `/users/{userId}`
-    - /transactions/{transactionId} -> **create** by cloud function only, **read** only by user
+    - `/transactions/{transactionId}` -> **create** by cloud function only, **read** only by user
 
 - `/donations/{donationId}` -> after **create**, the donor has **read**-only permission, 
     - `/answers/{answerId}` -> only creator, assigned collector and center-admins can **read** and **write**
