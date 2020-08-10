@@ -3,7 +3,7 @@
 ## scheme 1: donor -> collector -> center
 
 |Number|Description|Database operation|BloC event|Role|
-|---|---|---|---|
+|---|---|---|---|---|
 |1.|Donor first lists his donation.|**create** `Donation`|initial state|Donor|
 |2.|Donation gets assigned to a Distribution center, for MVP the nearest is chosen automatically. See Issue [#2](https://github.com/minga-app/minga_shared/issues/2)|**update** set fields `Donation.centerRef`, `Donation.centerAdmins`|`DonationCenterAssignedEvent`|Donor / Minga Admin, Cloud function automated|
 |3.|It gets determined if Donation needs a delivery service, which will in case it's needed be opened for application.|**update** set fields `Donation.needsDeliveryService`, `Donation.deliveryServiceRef`, **create** associated `Service`|
