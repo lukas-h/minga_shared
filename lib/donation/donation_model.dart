@@ -25,7 +25,10 @@ class Donation {
   ProductCondition condition;
   int maximumDelayForPickup; // in hours
 
+  String notes;
   DateTime created;
+  DateTime expiryDate;
+
   DocumentReference donorRef;
   DocumentReference donorPayoutRef;
 
@@ -58,7 +61,33 @@ class Donation {
     this.collectorRef,
     this.delivered,
     this.pickedUp,
+    this.notes,
+    this.expiryDate,
   });
+
+  factory Donation.fromProductClass(
+    ProductClass productClass,
+    DocumentReference donorRef,
+    DateTime expiryDate, {
+    DocumentReference selfRef,
+    String label,
+    String image,
+    DateTime created,
+    ProductSize size,
+    ProductCondition condition,
+  }) =>
+      Donation(
+        selfRef: selfRef,
+        label: label ?? productClass.label,
+        expiryDate: expiryDate ?? DateTime.now().add(Duration(days: 1)),
+        donorRef: donorRef,
+        image: image ?? productClass.image,
+        created: created ?? DateTime.now(),
+        productClassRef: productClass.selfRef,
+        maximumDelayForPickup: productClass.maximumDelayForPickup,
+        size: size ?? productClass.sizes?.first,
+        condition: condition ?? productClass.conditions?.first,
+      );
 
   factory Donation.fromSnapshot(DocumentSnapshot snapshot) =>
       _$donationFromSnapshot(snapshot);

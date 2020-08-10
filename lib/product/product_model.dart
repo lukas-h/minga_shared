@@ -27,7 +27,9 @@ class ProductSize {
 class ProductCondition {
   String label;
   String description;
-  int durationToExpiry; // milliseconds
+
+  /// in hours
+  int durationToExpiry;
 
   ProductCondition({this.label, this.description, this.durationToExpiry});
   factory ProductCondition.expired() => ProductCondition(label: 'expired');

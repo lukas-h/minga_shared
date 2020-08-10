@@ -8,9 +8,9 @@
 
 - `/donations/{donationId}` -> after **create**, the donor has **read**-only permission, 
     - `/answers/{answerId}` -> only creator, assigned collector and center-admins can **read** and **write**
-    - `/verificationSteps/{verificationStepId}` -> only creator, assigned collector and center-admins can **read** and **create**, **update** or **delete** is denied due to security reasons
 
 - `/services/{serviceId}` -> auto **create** by cloud function if *donation needs delivery (COLLECTOR)*
+    - `/answers/{answerId}` -> only creator and assigned service prodiver and associated Minga-admins can **read** and **write**
 
 - `/questions/{questionId}` -> general discussion on the platform, sorted by geo-location
     - `/answers/{answerId}`
@@ -24,3 +24,6 @@
 - `/productClasses/{productClassId}` -> product classifications
 
 - `/serviceClasses/{serviceClassId}` -> service classifications
+
+
+## User roles

@@ -15,6 +15,23 @@ class DonationService {
   get discussion =>
       DiscussionBloc(DiscussionService(firestore, parent: donation.selfRef));
 
+  Future<void> create(Donation newDonation) {
+    donation = newDonation ?? donation;
+    donation.selfRef ??= firestore.collection('donations').document();
+    if (donation.donorRef != null) {
+      // TODO throw something
+    }
+
+    return newDonation.selfRef.setData(newDonation.toMap());
+  }
+
+  Future<void> centerAssigned() {}
+  Future<void> needsDeliveryService() {}
+  Future<void> deliveryServiceStaffed() {}
+  Future<void> pickedUp() {}
+  Future<void> delivered() {}
+  Future<void> deliveryVerified() {}
+
   Stream<DonationEvent> get events => donation.selfRef.snapshots.map(
         (snap) => DonationEvent.fromDonationChange(
           donation,

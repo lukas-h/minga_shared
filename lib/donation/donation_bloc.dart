@@ -11,39 +11,32 @@ class DonationEvent {
     _nullChecker(dynamic before, dynamic after) =>
         before == null && after != null;
 
-    // 1.
     if (_nullChecker(before, after)) {
       return DonationCreatedEvent(after.created, false);
     }
 
-    // 2.
     if (_nullChecker(before.centerRef, after.centerRef) &&
         _nullChecker(before.centerAdmins, after.centerAdmins)) {
       return DonationCenterAssignedEvent(after.centerRef, false);
     }
 
-    // 3.
     if (_nullChecker(before.needsDeliveryService, after.needsDeliveryService) &&
         _nullChecker(before.deliveryServiceRef, after.deliveryServiceRef)) {
       return DonationNeedsDeliveryServiceEvent(false);
     }
 
-    // 4.
     if (_nullChecker(before.collectorRef, after.collectorRef)) {
       return DonationDeliveryServiceStaffedEvent(false);
     }
 
-    // 5.
     if (_nullChecker(before.pickedUp, after.pickedUp)) {
       return DonationPickedUpEvent(after.pickedUp, false);
     }
 
-    // 6.
     if (_nullChecker(before.delivered, after.delivered)) {
       return DonationDeliveredEvent(after.delivered, false);
     }
 
-    // 7.
     if (_nullChecker(before, after)) {
       return DonationDeliveryVerifiedEvent(after.deliveryVerified, false);
     }
@@ -52,11 +45,13 @@ class DonationEvent {
   }
 }
 
+/// 1st step
 class DonationCreatedEvent extends DonationEvent {
   final DateTime created;
   DonationCreatedEvent(this.created, bool proactive) : super(proactive);
 }
 
+/// 2nd step
 class DonationCenterAssignedEvent extends DonationEvent {
   final DocumentReference centerRef;
 
@@ -64,26 +59,31 @@ class DonationCenterAssignedEvent extends DonationEvent {
       : super(proactive);
 }
 
+/// 3rd step
 class DonationNeedsDeliveryServiceEvent extends DonationEvent {
   DonationNeedsDeliveryServiceEvent(bool proactive) : super(proactive);
 }
 
+/// 4th step
 class DonationDeliveryServiceStaffedEvent extends DonationEvent {
   DonationDeliveryServiceStaffedEvent(bool proactive) : super(proactive);
 }
 
+/// 5th step
 class DonationPickedUpEvent extends DonationEvent {
   final DateTime pickedUp;
 
   DonationPickedUpEvent(this.pickedUp, bool proactive) : super(proactive);
 }
 
+/// 6th step
 class DonationDeliveredEvent extends DonationEvent {
   final DateTime delivered;
 
   DonationDeliveredEvent(this.delivered, bool proactive) : super(proactive);
 }
 
+/// 7th step
 class DonationDeliveryVerifiedEvent extends DonationEvent {
   final DateTime deliveryVerified;
   DonationDeliveryVerifiedEvent(this.deliveryVerified, bool proactive)
@@ -123,19 +123,12 @@ class DonationBloc extends Bloc<DonationEvent, DonationState> {
   Stream<DonationState> mapEventToState(DonationEvent event) async* {
     if (event.proactive) {
       try {
-        // 1. create Donation
-        // ...
-        // 2.
+        // TODO implement
         if (event is DonationCenterAssignedEvent) {}
-        // 3.
         if (event is DonationNeedsDeliveryServiceEvent) {}
-        // 4.
         if (event is DonationDeliveryServiceStaffedEvent) {}
-        // 5.
         if (event is DonationPickedUpEvent) {}
-        // 6.
         if (event is DonationDeliveredEvent) {}
-        // 7.
         if (event is DonationDeliveryVerifiedEvent) {}
       } catch (e) {
         DonationFailureState(e);

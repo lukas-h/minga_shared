@@ -5,20 +5,25 @@ import 'package:test/test.dart';
 import 'donation_test.dart';
 
 Future<void> main() async {
-  DonationTest _donationTest;
-  setUp(() async {
-    _donationTest =
-        DonationTest(FirestoreImpl.fromInstance(MockFirestoreInstance()));
-    await _donationTest.setUp();
-  });
-
+  var _donationTest =
+      DonationTest(FirestoreImpl.fromInstance(MockFirestoreInstance()));
   group('donation test', () {
-    test('test', () {
-      expect(true, true);
+    setUp(() async {
+      await _donationTest.setUp();
     });
-  });
+    test('intialized', () {
+      expect(_donationTest != null, true);
+    });
+    test('Step 1: create Donation', _donationTest.step1());
+    test('Step 2: assign Center', _donationTest.step2());
+    test('Step 3 needs Service', _donationTest.step3());
+    test('Step 4 Service staffed', _donationTest.step4());
+    test('Step 5 picked up', _donationTest.step5());
+    test('Step 6 delivered', _donationTest.step6());
+    test('Step 7 delivery verifiedw', _donationTest.step7());
 
-  tearDown(() async {
-    await _donationTest.tearDown();
+    tearDown(() async {
+      await _donationTest.tearDown();
+    });
   });
 }
