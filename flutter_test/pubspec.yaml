@@ -18,5 +18,15 @@ dev_dependencies:
   firestore_serializable: ^0.0.17+2
   firebase_auth_mocks: ^0.2.1
   cloud_firestore_mocks: ^0.4.6+1
+  firestore_api:
+    git:
+      url: https://github.com/dartclub/firestore_dart
+      path: firestore_api
+  firestore_flutter:
+    git:
+      url: https://github.com/dartclub/firestore_dart
+      path: firestore_flutter
   minga_shared:
     path: ..
+  flutter_test:
+    sdk: flutter

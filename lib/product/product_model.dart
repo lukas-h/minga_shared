@@ -49,7 +49,7 @@ class ProductClass {
   int maximumDelayForPickup; // in hours
 
   bool superCategory;
-  DocumentReference superCategoryRef;
+  DocumentReference categoryRef;
 
   num averagePriceInCLPeso;
   int quantity;
@@ -64,7 +64,7 @@ class ProductClass {
     this.conditions,
     this.maximumDelayForPickup,
     this.superCategory,
-    this.superCategoryRef,
+    this.categoryRef,
     this.averagePriceInCLPeso,
     this.points,
     this.quantity,
