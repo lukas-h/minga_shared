@@ -25,7 +25,7 @@ class DonationTest {
         );
     collectorRef = await firestore.collection('users').add(
           MingaUser(
-                  email: 'collectr@minga-app.org',
+                  email: 'collector@minga-app.org',
                   firstName: 'Collector',
                   lastName: 'User',
                   phone: '+56 XXX XXXX XXXX')
