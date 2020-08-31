@@ -32,15 +32,20 @@ class Donation {
   DocumentReference donorRef;
   DocumentReference donorPayoutRef;
 
+  String deliveryMapImage;
+  String centerLabel;
+  List<DocumentReference> centerAdmins;
+  DocumentReference centerRef;
+  Map<String, dynamic> startLocation;
+  Map<String, dynamic> endLocation;
+
   bool needsDeliveryService;
   DocumentReference deliveryServiceRef;
-  DocumentReference collectorRef;
+  DocumentReference assignedCollectorRef;
   DateTime pickedUp;
   DateTime delivered;
 
   DateTime deliveryVerified;
-  DocumentReference centerRef;
-  List<DocumentReference> centerAdmins;
 
   Donation({
     this.selfRef,
@@ -58,11 +63,15 @@ class Donation {
     this.deliveryVerified,
     this.donorPayoutRef,
     this.maximumDelayForPickup,
-    this.collectorRef,
+    this.assignedCollectorRef,
     this.delivered,
     this.pickedUp,
     this.notes,
     this.expiryDate,
+    this.deliveryMapImage,
+    this.endLocation,
+    this.startLocation,
+    this.centerLabel,
   });
 
   factory Donation.fromProductClass(

@@ -25,7 +25,7 @@ class DonationEvent {
       return DonationNeedsDeliveryServiceEvent(false);
     }
 
-    if (_nullChecker(before.collectorRef, after.collectorRef)) {
+    if (_nullChecker(before.assignedCollectorRef, after.assignedCollectorRef)) {
       return DonationDeliveryServiceStaffedEvent(false);
     }
 

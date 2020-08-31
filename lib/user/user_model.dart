@@ -16,12 +16,15 @@ class MingaUser {
 
   String phone;
 
+  Map<String, dynamic> location;
+
   MingaUser({
     this.selfRef,
     this.firstName,
     this.lastName,
     this.email,
     this.phone,
+    this.location,
   });
 
   factory MingaUser.fromSnapshot(DocumentSnapshot snapshot) =>

@@ -14,7 +14,13 @@ dependencies:
       path: firestore_api
   firestore_annotations: ^0.0.2
   equatable: ^1.0.0
-
+  mapbox_search:
+    git:
+      url:  https://github.com/dartclub/mapbox_search
+      ref: turf-based
+  cloudinary_client:
+    git: https://github.com/dartclub/cloudinary_client
+  turf: 0.0.1+4
 dev_dependencies:
   dartclub_lint: 0.2.1
   test: ^1.6.0

@@ -8,10 +8,13 @@ class DistributionCenter {
   DocumentReference selfRef;
   String label;
   List<DocumentReference> admins;
+  Map<String, dynamic> location;
+
   DistributionCenter({
     this.admins,
     this.label,
     this.selfRef,
+    this.location,
   });
   factory DistributionCenter.fromSnapshot(DocumentSnapshot snapshot) =>
       _$distributionCenterFromSnapshot(snapshot);

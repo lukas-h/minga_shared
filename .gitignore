@@ -12,3 +12,4 @@ doc/api/
 
 *.g.dart
 
+lib/credentials.dart
