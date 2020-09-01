@@ -1,6 +1,6 @@
 import 'package:firestore_api/firestore_api.dart';
-import '../user/image_service.dart';
-import '../user/location_service.dart';
+import '../utils/image_service.dart';
+import '../utils/location_service.dart';
 import 'package:turf/nearest_point.dart';
 import 'package:turf/turf.dart';
 import 'donation_bloc.dart';

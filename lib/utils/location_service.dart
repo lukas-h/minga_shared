@@ -6,7 +6,23 @@ import '../helpers.dart';
 
 class PositionService {
   final StaticImage _staticImage;
-  PositionService() : _staticImage = StaticImage(apiKey: MAPBOX_KEY);
+  final PlacesSearch _placesSearch;
+  PositionService({String language = 'EN'})
+      : _staticImage = StaticImage(apiKey: MAPBOX_KEY),
+        _placesSearch = PlacesSearch(
+          apiKey: MAPBOX_KEY,
+          language: language,
+          limit: 10,
+        );
+
+  Future<FeatureCollection> getPlaces(String searchInput,
+      {Point proximity}) async {
+    final predictions = await _placesSearch.getPlaces(
+      searchInput,
+      position: proximity.coordinates,
+    );
+    return predictions;
+  }
 
   String getDirectionsImage(
     Point start,

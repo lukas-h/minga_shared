@@ -7,10 +7,9 @@ part 'user_model.g.dart';
 class MingaUser {
   DocumentReference selfRef;
   @FirestoreAttribute(ignore: true)
-  String get label => firstName + lastName;
+  String get label => displayName;
 
-  String firstName;
-  String lastName;
+  String displayName;
 
   String email;
 
@@ -20,8 +19,7 @@ class MingaUser {
 
   MingaUser({
     this.selfRef,
-    this.firstName,
-    this.lastName,
+    this.displayName,
     this.email,
     this.phone,
     this.location,
