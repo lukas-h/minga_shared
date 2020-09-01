@@ -41,7 +41,9 @@ class AuthFailureState extends AuthState {
 }
 
 abstract class AuthCubit extends Cubit<AuthState> {
-  AuthCubit() : super(LoginPromptState());
+  AuthCubit() : super(AuthProgressState());
+
+  tryLogin();
 
   loginWithEmailAndPassword(String email, String password);
   registerWithEmailAndPassword(String email, String password);
