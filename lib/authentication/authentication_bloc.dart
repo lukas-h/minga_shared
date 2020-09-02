@@ -8,7 +8,11 @@ abstract class AuthState extends Equatable {
   List<Object> get props => [];
 }
 
-class LoginPromptState extends AuthState {}
+class LoginPromptState extends AuthState {
+  final bool phone;
+
+  LoginPromptState(this.phone);
+}
 
 class RegisterPromptState extends AuthState {}
 
@@ -44,6 +48,14 @@ abstract class AuthCubit extends Cubit<AuthState> {
   AuthCubit() : super(AuthProgressState());
 
   tryLogin();
+
+  loginPrompt(bool phone) {
+    emit(LoginPromptState(phone));
+  }
+
+  registerPrompt() {
+    emit(RegisterPromptState());
+  }
 
   loginWithEmailAndPassword(String email, String password);
   registerWithEmailAndPassword(String email, String password);
