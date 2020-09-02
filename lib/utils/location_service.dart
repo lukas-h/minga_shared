@@ -19,7 +19,7 @@ class PositionService {
       {Point proximity}) async {
     final predictions = await _placesSearch.getPlaces(
       searchInput,
-      position: proximity.coordinates,
+      position: proximity?.coordinates,
     );
     return predictions;
   }
