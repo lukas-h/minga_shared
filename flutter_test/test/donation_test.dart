@@ -18,24 +18,21 @@ class DonationTest {
     donorRef = await firestore.collection('users').add(
           MingaUser(
                   email: 'donor@minga-app.org',
-                  firstName: 'Donor',
-                  lastName: 'User',
+                  displayName: 'Donor',
                   phone: '+56 XXX XXXX XXXX')
               .toMap(),
         );
     collectorRef = await firestore.collection('users').add(
           MingaUser(
                   email: 'collector@minga-app.org',
-                  firstName: 'Collector',
-                  lastName: 'User',
+                  displayName: 'Collector',
                   phone: '+56 XXX XXXX XXXX')
               .toMap(),
         );
     centerAdminRef = await firestore.collection('users').add(
           MingaUser(
                   email: 'test@minga-app.org',
-                  firstName: 'Center Admin',
-                  lastName: 'User',
+                  displayName: 'Center Admin',
                   phone: '+56 XXX XXXX XXXX')
               .toMap(),
         );

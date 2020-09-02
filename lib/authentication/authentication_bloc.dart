@@ -9,9 +9,7 @@ abstract class AuthState extends Equatable {
 }
 
 class LoginPromptState extends AuthState {
-  final bool phone;
-
-  LoginPromptState(this.phone);
+  LoginPromptState();
 }
 
 class RegisterPromptState extends AuthState {}
@@ -49,8 +47,8 @@ abstract class AuthCubit extends Cubit<AuthState> {
 
   tryLogin();
 
-  loginPrompt(bool phone) {
-    emit(LoginPromptState(phone));
+  loginPrompt() {
+    emit(LoginPromptState());
   }
 
   registerPrompt() {

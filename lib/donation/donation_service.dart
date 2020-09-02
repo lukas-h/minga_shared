@@ -70,10 +70,9 @@ class DonationService {
     // TODO create delivery service
   }
 
-  Future<void> deliveryServiceStaffed(
-      DocumentReference assignedCollectorRef) async {
+  Future<void> deliveryServiceStaffed(DocumentReference assignedCollectorRef) {
     donation.assignedCollectorRef = assignedCollectorRef;
-    donation.selfRef.update(donation.toMap());
+    return donation.selfRef.update(donation.toMap());
   }
 
   Future<void> pickedUp() async {}

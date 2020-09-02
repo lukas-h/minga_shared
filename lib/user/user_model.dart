@@ -6,6 +6,7 @@ part 'user_model.g.dart';
 @FirestoreDocument()
 class MingaUser {
   DocumentReference selfRef;
+
   @FirestoreAttribute(ignore: true)
   String get label => displayName;
 
@@ -17,12 +18,15 @@ class MingaUser {
 
   Map<String, dynamic> location;
 
+  bool anonymizeDonations;
+
   MingaUser({
     this.selfRef,
     this.displayName,
     this.email,
     this.phone,
     this.location,
+    this.anonymizeDonations,
   });
 
   factory MingaUser.fromSnapshot(DocumentSnapshot snapshot) =>
