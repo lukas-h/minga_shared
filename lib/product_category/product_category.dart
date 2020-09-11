@@ -1,7 +1,7 @@
 import 'package:firestore_annotations/firestore_annotations.dart';
 import 'package:firestore_api/firestore_api.dart';
 
-part 'product_model.g.dart';
+part 'product_category.g.dart';
 
 @FirestoreDocument(hasSelfRef: false)
 class ProductSize {
@@ -42,7 +42,7 @@ class ProductCondition {
 }
 
 @FirestoreDocument()
-class ProductClass {
+class ProductCategory {
   DocumentReference selfRef;
   String label;
   String image;
@@ -58,7 +58,7 @@ class ProductClass {
   String unit;
   num points;
 
-  ProductClass({
+  ProductCategory({
     this.selfRef,
     this.label,
     this.image,
@@ -73,7 +73,7 @@ class ProductClass {
     this.unit,
   });
 
-  factory ProductClass.create(Firestore f) => ProductClass(
+  factory ProductCategory.create(Firestore f) => ProductCategory(
         selfRef: f.collection('product').document(),
         label: '',
         image: '',
@@ -83,9 +83,9 @@ class ProductClass {
         superCategory: false,
       );
 
-  factory ProductClass.fromSnapshot(DocumentSnapshot snapshot) =>
-      _$productClassFromSnapshot(snapshot);
-  factory ProductClass.fromMap(Map<String, dynamic> data) =>
-      _$productClassFromMap(data);
-  Map<String, dynamic> toMap() => _$productClassToMap(this);
+  factory ProductCategory.fromSnapshot(DocumentSnapshot snapshot) =>
+      _$productCategoryFromSnapshot(snapshot);
+  factory ProductCategory.fromMap(Map<String, dynamic> data) =>
+      _$productCategoryFromMap(data);
+  Map<String, dynamic> toMap() => _$productCategoryToMap(this);
 }

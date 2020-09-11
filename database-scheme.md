@@ -21,9 +21,9 @@
 
 - `/offers/{offerId}` -> food offers from distribution centers
 
-- `/productClasses/{productClassId}` -> product classifications
+- `/productCategories/{productCategoryId}` -> product classifications
 
-- `/serviceClasses/{serviceClassId}` -> service classifications
+- `/voluntaryWorkCategories/{voluntaryWorkCategoryId}` -> service classifications
 
 
 ## User roles

@@ -29,8 +29,8 @@ class DonationService {
   Future<void> assignCenter() async {
     try {
       var snap = await firestore.collection('centers').getDocuments();
-      List<DistributionCenter> centers = snap.documents
-          .map((docSnap) => DistributionCenter.fromSnapshot(docSnap))
+      List<CenterModel> centers = snap.documents
+          .map((docSnap) => CenterModel.fromSnapshot(docSnap))
           .toList();
 
       if (donation.startLocation == null) {
@@ -55,7 +55,6 @@ class DonationService {
       donation
         ..centerRef = nearestCenter.selfRef
         ..centerLabel = nearestCenter.label
-        ..centerAdmins = nearestCenter.admins
         ..deliveryMapImage = cloudinaryUrl;
 
       await donation.selfRef.update(donation.toMap());
@@ -91,11 +90,11 @@ class DonationListService {
   final Firestore firestore;
   final Query query;
   DonationListService._(this.firestore, this.query);
-  factory DonationListService.forDonor(Firestore firestore, MingaUser user) =>
+  factory DonationListService.forDonor(Firestore firestore, UserModel user) =>
       _DonorDonationListService(firestore, user);
 
   factory DonationListService.forCenter(
-          Firestore firestore, DistributionCenter center) =>
+          Firestore firestore, CenterModel center) =>
       _CenterDonationListService(firestore, center);
 
   Stream<List<Donation>> donationStream() => query.snapshots().map(
@@ -105,7 +104,7 @@ class DonationListService {
 }
 
 class _DonorDonationListService extends DonationListService {
-  _DonorDonationListService(Firestore firestore, MingaUser user)
+  _DonorDonationListService(Firestore firestore, UserModel user)
       : super._(
             firestore,
             firestore
@@ -116,7 +115,7 @@ class _DonorDonationListService extends DonationListService {
 }
 
 class _CenterDonationListService extends DonationListService {
-  _CenterDonationListService(Firestore firestore, DistributionCenter center)
+  _CenterDonationListService(Firestore firestore, CenterModel center)
       : super._(
             firestore,
             firestore

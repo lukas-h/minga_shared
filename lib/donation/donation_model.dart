@@ -1,6 +1,6 @@
 import 'package:firestore_annotations/firestore_annotations.dart';
 import 'package:firestore_api/firestore_api.dart';
-import '../minga_shared.dart';
+import '../product_category/product_category.dart';
 
 part 'donation_model.g.dart';
 
@@ -18,7 +18,7 @@ part 'donation_model.g.dart';
 class Donation {
   DocumentReference selfRef;
 
-  DocumentReference productClassRef;
+  DocumentReference productCategoryRef;
   String label;
   String image;
   ProductSize size;
@@ -52,7 +52,7 @@ class Donation {
     this.condition,
     this.label,
     this.image,
-    this.productClassRef,
+    this.productCategoryRef,
     this.size,
     this.centerRef,
     this.centerAdmins,
@@ -74,8 +74,8 @@ class Donation {
     this.centerLabel,
   });
 
-  factory Donation.fromProductClass(
-    ProductClass productClass,
+  factory Donation.fromProductCategory(
+    ProductCategory productCategory,
     DocumentReference donorRef,
     DateTime expiryDate, {
     DocumentReference selfRef,
@@ -87,15 +87,15 @@ class Donation {
   }) =>
       Donation(
         selfRef: selfRef,
-        label: label ?? productClass.label,
+        label: label ?? productCategory.label,
         expiryDate: expiryDate ?? DateTime.now().add(Duration(days: 1)),
         donorRef: donorRef,
-        image: image ?? productClass.image,
+        image: image ?? productCategory.image,
         created: created ?? DateTime.now(),
-        productClassRef: productClass.selfRef,
-        maximumDelayForPickup: productClass.maximumDelayForPickup,
-        size: size ?? productClass.sizes?.first,
-        condition: condition ?? productClass.conditions?.first,
+        productCategoryRef: productCategory.selfRef,
+        maximumDelayForPickup: productCategory.maximumDelayForPickup,
+        size: size ?? productCategory.sizes?.first,
+        condition: condition ?? productCategory.conditions?.first,
       );
 
   factory Donation.fromSnapshot(DocumentSnapshot snapshot) =>

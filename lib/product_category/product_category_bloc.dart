@@ -2,9 +2,9 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'product_service.dart';
+import 'product_category_service.dart';
 
-import 'product_model.dart';
+import 'product_category.dart';
 
 // ------ event ------
 
@@ -14,19 +14,19 @@ abstract class ProductEvent extends Equatable {
 }
 
 class SetProductEvent extends ProductEvent {
-  final ProductClass product;
+  final ProductCategory product;
 
   SetProductEvent(this.product);
 }
 
 class UpdateProductEvent extends ProductEvent {
-  final ProductClass product;
+  final ProductCategory product;
 
   UpdateProductEvent(this.product);
 }
 
 class DeleteProductEvent extends ProductEvent {
-  final ProductClass product;
+  final ProductCategory product;
 
   DeleteProductEvent(this.product);
 }
@@ -34,7 +34,7 @@ class DeleteProductEvent extends ProductEvent {
 class ProductLoadingEvent extends ProductEvent {}
 
 class ProductSnapshotEvent extends ProductEvent {
-  final List<ProductClass> products;
+  final List<ProductCategory> products;
 
   ProductSnapshotEvent(this.products);
 }
@@ -61,7 +61,7 @@ class ProductFailureState extends ProductState {
 }
 
 class ProductSnapshotState extends ProductState {
-  final List<ProductClass> products;
+  final List<ProductCategory> products;
 
   ProductSnapshotState(this.products);
 }
@@ -91,8 +91,7 @@ class ProductBloc extends Bloc<ProductEvent, ProductState> {
 
   Stream<ProductState> _mapStreamToState() async* {
     await _subscription?.cancel();
-    _subscription = _productService
-        .productStream()
+    _subscription = _productService.stream
         .listen((snapshot) => add(ProductSnapshotEvent(snapshot)));
   }
 

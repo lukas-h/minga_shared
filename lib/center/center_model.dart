@@ -4,21 +4,34 @@ import 'package:firestore_api/firestore_api.dart';
 part 'center_model.g.dart';
 
 @FirestoreDocument()
-class DistributionCenter {
+class CenterModel {
   DocumentReference selfRef;
   String label;
-  List<DocumentReference> admins;
   Map<String, dynamic> location;
 
-  DistributionCenter({
-    this.admins,
+  CenterModel({
     this.label,
     this.selfRef,
     this.location,
   });
-  factory DistributionCenter.fromSnapshot(DocumentSnapshot snapshot) =>
-      _$distributionCenterFromSnapshot(snapshot);
-  factory DistributionCenter.fromMap(Map<String, dynamic> data) =>
-      _$distributionCenterFromMap(data);
-  Map<String, dynamic> toMap() => _$distributionCenterToMap(this);
+  factory CenterModel.fromSnapshot(DocumentSnapshot snapshot) =>
+      _$centerModelFromSnapshot(snapshot);
+  factory CenterModel.fromMap(Map<String, dynamic> data) =>
+      _$centerModelFromMap(data);
+  Map<String, dynamic> toMap() => _$centerModelToMap(this);
+}
+
+@FirestoreDocument()
+class CenterRoleModel {
+  DocumentReference selfRef; // reference of the profile
+  String label;
+  CenterRoleModel({
+    this.selfRef,
+    this.label,
+  });
+  factory CenterRoleModel.fromSnapshot(DocumentSnapshot snapshot) =>
+      _$centerRoleModelFromSnapshot(snapshot);
+  factory CenterRoleModel.fromMap(Map<String, dynamic> data) =>
+      _$centerRoleModelFromMap(data);
+  Map<String, dynamic> toMap() => _$centerRoleModelToMap(this);
 }

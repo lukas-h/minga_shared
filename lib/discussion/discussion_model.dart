@@ -11,8 +11,7 @@ class DiscussionItem {
   String label;
   String description;
   bool isEntry;
-  String locationLabel;
-  List<int> coordinates;
+  Map<String, dynamic> location;
   DiscussionItem({
     this.created,
     this.description,
@@ -20,8 +19,7 @@ class DiscussionItem {
     this.selfRef,
     this.isEntry,
     this.userRef,
-    this.coordinates,
-    this.locationLabel,
+    this.location,
   });
 
   factory DiscussionItem.fromSnapshot(DocumentSnapshot snapshot) =>

@@ -4,13 +4,10 @@ import 'package:firestore_api/firestore_api.dart';
 part 'user_model.g.dart';
 
 @FirestoreDocument()
-class MingaUser {
+class UserModel {
   DocumentReference selfRef;
 
-  @FirestoreAttribute(ignore: true)
-  String get label => displayName;
-
-  String displayName;
+  String label; // name
 
   String email;
 
@@ -18,20 +15,23 @@ class MingaUser {
 
   Map<String, dynamic> location;
 
-  bool anonymizeDonations;
+  num impactBalance;
 
-  MingaUser({
+  num totalImpact;
+
+  UserModel({
     this.selfRef,
-    this.displayName,
+    this.label,
     this.email,
     this.phone,
     this.location,
-    this.anonymizeDonations,
+    this.impactBalance,
+    this.totalImpact,
   });
 
-  factory MingaUser.fromSnapshot(DocumentSnapshot snapshot) =>
-      _$mingaUserFromSnapshot(snapshot);
-  factory MingaUser.fromMap(Map<String, dynamic> data) =>
-      _$mingaUserFromMap(data);
-  Map<String, dynamic> toMap() => _$mingaUserToMap(this);
+  factory UserModel.fromSnapshot(DocumentSnapshot snapshot) =>
+      _$userModelFromSnapshot(snapshot);
+  factory UserModel.fromMap(Map<String, dynamic> data) =>
+      _$userModelFromMap(data);
+  Map<String, dynamic> toMap() => _$userModelToMap(this);
 }
