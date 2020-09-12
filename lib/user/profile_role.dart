@@ -8,10 +8,12 @@ class ProfileRoleModel {
   DocumentReference selfRef; // same id   as the the profile
   DocumentReference profileRef;
   String label;
+  String type;
   ProfileRoleModel({
     this.selfRef,
     this.label,
     this.profileRef,
+    this.type,
   });
   factory ProfileRoleModel.fromSnapshot(DocumentSnapshot snapshot) =>
       _$profileRoleModelFromSnapshot(snapshot);

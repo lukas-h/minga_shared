@@ -28,32 +28,23 @@ class CreateUserAction extends DocumentAction<AuthUser> {
 
   @override
   Future<ActionResult> runActionInternal(AuthUser model) async {
-    try {
-      var userModel = UserModel(
-        selfRef: firestore.collection('users').document(model.uid),
-        email: model.email,
-        label: model.label,
-        phone: model.phone,
-        impactBalance: 0,
-        profileRef: null,
-        totalImpact: 0,
-      );
+    var userModel = UserModel(
+      selfRef: firestore.collection('users').document(model.uid),
+      email: model.email,
+      label: model.label,
+      phone: model.phone,
+      impactBalance: 0,
+      profileRef: null,
+      totalImpact: 0,
+    );
 
-      await addSetDataToBatch(userModel.selfRef, userModel.toMap());
+    await addSetDataToBatch(userModel.selfRef, userModel.toMap());
 
-      return ActionResult.success(
-        userModel.selfRef,
-        'UserModel',
-        ActionType.create,
-      );
-    } catch (e) {
-      return ActionResult.failure(
-        null,
-        'UserModel',
-        ActionType.create,
-        message: e.toString(),
-      );
-    }
+    return ActionResult.success(
+      userModel.selfRef,
+      'UserModel',
+      ActionType.create,
+    );
   }
 }
 
@@ -65,39 +56,30 @@ class FinishOnboardingAction extends DocumentAction<ProfileModel> {
 
   @override
   Future<ActionResult> runActionInternal(ProfileModel model) async {
-    try {
-      model
-        ..selfRef ??= firestore.collection('profiles').document()
-        ..userDeleted = null
-        ..totalImpact = model.showImpact ? userModel.totalImpact : null;
+    model
+      ..selfRef ??= firestore.collection('profiles').document()
+      ..userDeleted = null
+      ..totalImpact = model.showImpact ? userModel.totalImpact : null;
 
-      await addSetDataToBatch(model.selfRef, model.toMap());
+    await addSetDataToBatch(model.selfRef, model.toMap());
 
-      userModel = UserModel(
-        selfRef: userModel.selfRef,
-        totalImpact: null,
-        impactBalance: null,
-        email: model.email,
-        phone: model.phone,
-        label: model.label,
-        profileRef: model.selfRef,
-      );
+    userModel = UserModel(
+      selfRef: userModel.selfRef,
+      totalImpact: null,
+      impactBalance: null,
+      email: model.email,
+      phone: model.phone,
+      label: model.label,
+      profileRef: model.selfRef,
+    );
 
-      await addUpdateToBatch(userModel.selfRef, userModel.toMap());
+    await addUpdateToBatch(userModel.selfRef, userModel.toMap());
 
-      return ActionResult.success(
-        model.selfRef,
-        'UserModel',
-        ActionType.create,
-      );
-    } catch (e) {
-      return ActionResult.failure(
-        model.selfRef,
-        'UserModel',
-        ActionType.create,
-        message: e.toString(),
-      );
-    }
+    return ActionResult.success(
+      model.selfRef,
+      'UserModel',
+      ActionType.create,
+    );
   }
 }
 
@@ -107,42 +89,33 @@ class UpdateUserAction extends DocumentAction<ProfileModel> {
 
   @override
   Future<ActionResult> runActionInternal(ProfileModel model) async {
-    try {
-      model
-        ..totalImpact = null
-        ..userDeleted = null;
+    model
+      ..totalImpact = null
+      ..userDeleted = null;
 
-      if (!model.showEmail) {
-        model.email = null;
-      }
-
-      if (!model.showPhone) {
-        model.email = null;
-      }
-
-      userModel = UserModel(
-        selfRef: userModel.selfRef,
-        label: model.label,
-        email: model.email,
-        phone: model.phone,
-      );
-
-      await addUpdateToBatch(model.selfRef, model.toMap());
-      await addUpdateToBatch(userModel.selfRef, userModel.toMap());
-
-      return ActionResult.success(
-        model.selfRef,
-        'ProfileModel',
-        ActionType.update,
-      );
-    } catch (e) {
-      return ActionResult.failure(
-        model.selfRef,
-        'ProfileModel',
-        ActionType.update,
-        message: e.toString(),
-      );
+    if (!model.showEmail) {
+      model.email = null;
     }
+
+    if (!model.showPhone) {
+      model.email = null;
+    }
+
+    userModel = UserModel(
+      selfRef: userModel.selfRef,
+      label: model.label,
+      email: model.email,
+      phone: model.phone,
+    );
+
+    await addUpdateToBatch(model.selfRef, model.toMap());
+    await addUpdateToBatch(userModel.selfRef, userModel.toMap());
+
+    return ActionResult.success(
+      model.selfRef,
+      'ProfileModel',
+      ActionType.update,
+    );
   }
 }
 
@@ -189,37 +162,28 @@ class DeleteUserAction extends DocumentAction<UserModel> {
 
   @override
   Future<ActionResult> runActionInternal(UserModel model) async {
-    try {
-      await addUpdateToBatch(
-          model.profileRef,
-          ProfileModel(
-            selfRef: model.profileRef,
-            anonymizeChats: true,
-            anonymizeDonations: true,
-            email: null,
-            label: 'inactive profile',
-            location: null,
-            phone: null,
-            showEmail: false,
-            showImpact: false,
-            showPhone: false,
-            totalImpact: null,
-            userDeleted: true,
-          ).toMap());
-      await addDeleteToBatch(model.selfRef);
-      return ActionResult.success(
-        model.selfRef,
-        'UserModel',
-        ActionType.delete,
-      );
-    } catch (e) {
-      return ActionResult.failure(
-        model.selfRef,
-        'UserModel',
-        ActionType.delete,
-        message: e.toString(),
-      );
-    }
+    await addUpdateToBatch(
+        model.profileRef,
+        ProfileModel(
+          selfRef: model.profileRef,
+          anonymizeChats: true,
+          anonymizeDonations: true,
+          email: null,
+          label: 'inactive profile',
+          location: null,
+          phone: null,
+          showEmail: false,
+          showImpact: false,
+          showPhone: false,
+          totalImpact: null,
+          userDeleted: true,
+        ).toMap());
+    await addDeleteToBatch(model.selfRef);
+    return ActionResult.success(
+      model.selfRef,
+      'UserModel',
+      ActionType.delete,
+    );
   }
 }
 
@@ -229,27 +193,18 @@ class DeleteUserDataAction extends DocumentAction<UserModel> {
 
   @override
   Future<ActionResult> runActionInternal(UserModel userBeforeDeletion) async {
-    try {
-      var querySnapshot = await firestore
-          .collectionGroup('roles')
-          .where('profileRef', isEqualTo: userBeforeDeletion.profileRef)
-          .getDocuments();
+    var querySnapshot = await firestore
+        .collectionGroup('roles')
+        .where('profileRef', isEqualTo: userBeforeDeletion.profileRef)
+        .getDocuments();
 
-      for (var role in querySnapshot.documents) {
-        addDeleteToBatch(role.reference);
-      }
-      return ActionResult.success(
-        null,
-        'UserModel',
-        ActionType.delete,
-      );
-    } catch (e) {
-      return ActionResult.failure(
-        null,
-        'UserModel',
-        ActionType.delete,
-        message: e.toString(),
-      );
+    for (var role in querySnapshot.documents) {
+      addDeleteToBatch(role.reference);
     }
+    return ActionResult.success(
+      null,
+      'UserModel',
+      ActionType.delete,
+    );
   }
 }

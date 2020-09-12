@@ -4,13 +4,47 @@ import '../user/profile_role.dart';
 import '../actions.dart';
 import 'center_model.dart';
 
-class CreateCenterAction extends DocumentAction<CenterModel> {
-  CreateCenterAction(Firestore firestore) : super(firestore);
+class CentersQuery extends CollectionQuery<CenterModel> {
+  CentersQuery(Firestore firestore) : super(firestore.collection('centers'));
 
   @override
-  Future<ActionResult> runActionInternal(CenterModel model) {
-    // TODO: implement runActionInternal
-    throw UnimplementedError();
+  List<CenterModel> mapQuery(List<DocumentSnapshot> snapshots) =>
+      snapshots.map((docSnap) => CenterModel.fromSnapshot(docSnap)).toList();
+}
+
+class CenterRolesQuery extends CollectionQuery<ProfileRoleModel> {
+  CenterRolesQuery(DocumentReference centerRef)
+      : super(centerRef.collection('roles'));
+
+  @override
+  List<ProfileRoleModel> mapQuery(List<DocumentSnapshot> snapshots) => snapshots
+      .map((docSnap) => ProfileRoleModel.fromSnapshot(docSnap))
+      .toList();
+}
+
+class CreateCenterAction extends DocumentAction<CenterModel> {
+  final ProfileModel profileModel;
+  CreateCenterAction(Firestore firestore, this.profileModel) : super(firestore);
+
+  @override
+  Future<ActionResult> runActionInternal(CenterModel model) async {
+    model.selfRef ??= firestore.collection('centers').document();
+    await addSetDataToBatch(model.selfRef, model.toMap());
+    if (profileModel != null) {
+      var role = ProfileRoleModel(
+        selfRef: model.selfRef
+            .collection('roles')
+            .document(profileModel.selfRef.documentID),
+        label: profileModel.label,
+        profileRef: profileModel.selfRef,
+      );
+      await addSetDataToBatch(role.selfRef, role.toMap());
+    }
+    return ActionResult.success(
+      model.selfRef,
+      'CenterModel',
+      ActionType.create,
+    );
   }
 }
 
@@ -20,28 +54,19 @@ class CreateRoleAction extends DocumentAction<ProfileModel> {
 
   @override
   Future<ActionResult> runActionInternal(ProfileModel model) async {
-    try {
-      var role = ProfileRoleModel(
-        selfRef: centerModel.selfRef
-            .collection('roles')
-            .document(model.selfRef.documentID),
-        label: model.label,
-        profileRef: model.selfRef,
-      );
+    var role = ProfileRoleModel(
+      selfRef: centerModel.selfRef
+          .collection('roles')
+          .document(model.selfRef.documentID),
+      label: model.label,
+      profileRef: model.selfRef,
+    );
 
-      await addSetDataToBatch(role.selfRef, role.toMap());
-      return ActionResult.success(
-        model.selfRef,
-        'CenterModel',
-        ActionType.create,
-      );
-    } catch (e) {
-      return ActionResult.failure(
-        model.selfRef,
-        'CenterModel',
-        ActionType.create,
-        message: e.toString(),
-      );
-    }
+    await addSetDataToBatch(role.selfRef, role.toMap());
+    return ActionResult.success(
+      model.selfRef,
+      'CenterModel',
+      ActionType.create,
+    );
   }
 }

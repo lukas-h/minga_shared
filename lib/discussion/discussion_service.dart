@@ -2,6 +2,8 @@ import 'package:firestore_api/firestore_api.dart';
 
 import 'discussion_model.dart';
 
+// TODO migrate to new document actions
+
 class DiscussionService {
   final Firestore firestore;
   final DocumentReference parent;

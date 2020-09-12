@@ -7,6 +7,7 @@ import 'product_category_service.dart';
 import 'product_category.dart';
 
 // ------ event ------
+// TODO migrate to new actions
 
 abstract class ProductEvent extends Equatable {
   @override

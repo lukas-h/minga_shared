@@ -4,18 +4,46 @@ import '../product_category/product_category.dart';
 
 part 'donation_model.g.dart';
 
-// class DonationEventString {
-//   static String created = 'created';
-//   static String centerAssigned = 'centerAssigned';
-//   static String needsDeliveryService = 'needsDeliveryService';
-//   static String deliveryServiceStaffed = 'deliveryServiceStaffed';
-//   static String pickedUp = 'pickedUp';
-//   static String delivered = 'delivered';
-//   static String deliveryVerified = 'pickedUp';
-// }
+class DonationUpdateType {
+  static final String created = 'created';
+  static final String assignedToCenter = 'assignedToCenter';
+  static final String needsDelivery = 'needsDelivery';
+  static final String openForApplication = 'openForApplication';
+  static final String applicationClosed = 'applicationClosed ';
+  static final String pickedUp = 'pickedUp';
+  static final String delivered = 'delivered';
+  static final String deliveryConfirmed = 'deliveryConfirmed';
+  static final String closed = 'closed';
+}
 
 @FirestoreDocument()
-class Donation {
+class DonationUpdateModel {
+  DocumentReference selfRef;
+  String type;
+  DateTime created;
+  DonationUpdateModel({
+    this.selfRef,
+    this.created,
+    this.type,
+  });
+
+  factory DonationUpdateModel.fromSnapshot(DocumentSnapshot snapshot) =>
+      _$donationUpdateModelFromSnapshot(snapshot);
+
+  factory DonationUpdateModel.fromMap(Map<String, dynamic> data) =>
+      _$donationUpdateModelFromMap(data);
+
+  Map<String, dynamic> toMap() => _$donationUpdateModelToMap(this);
+}
+
+class DonationRoleTypes {
+  static final String donor = 'donor';
+  static final String centerAdmin = 'centerAdmin';
+  static final String collector = 'collector';
+}
+
+@FirestoreDocument()
+class DonationModel {
   DocumentReference selfRef;
 
   DocumentReference productCategoryRef;
@@ -26,28 +54,17 @@ class Donation {
   int maximumDelayForPickup; // in hours
 
   String notes;
-  DateTime created;
   DateTime expiryDate;
 
   DocumentReference donorRef;
-  DocumentReference donorPayoutRef;
 
   String deliveryMapImage;
-  String centerLabel;
-  List<DocumentReference> centerAdmins;
   DocumentReference centerRef;
+  String centerLabel;
   Map<String, dynamic> startLocation;
   Map<String, dynamic> endLocation;
 
-  bool needsDeliveryService;
-  DocumentReference deliveryServiceRef;
-  DocumentReference assignedCollectorRef;
-  DateTime pickedUp;
-  DateTime delivered;
-
-  DateTime deliveryVerified;
-
-  Donation({
+  DonationModel({
     this.selfRef,
     this.condition,
     this.label,
@@ -55,17 +72,8 @@ class Donation {
     this.productCategoryRef,
     this.size,
     this.centerRef,
-    this.centerAdmins,
     this.donorRef,
-    this.deliveryServiceRef,
-    this.needsDeliveryService,
-    this.created,
-    this.deliveryVerified,
-    this.donorPayoutRef,
     this.maximumDelayForPickup,
-    this.assignedCollectorRef,
-    this.delivered,
-    this.pickedUp,
     this.notes,
     this.expiryDate,
     this.deliveryMapImage,
@@ -74,7 +82,7 @@ class Donation {
     this.centerLabel,
   });
 
-  factory Donation.fromProductCategory(
+  factory DonationModel.fromProductCategory(
     ProductCategory productCategory,
     DocumentReference donorRef,
     DateTime expiryDate, {
@@ -85,22 +93,21 @@ class Donation {
     ProductSize size,
     ProductCondition condition,
   }) =>
-      Donation(
+      DonationModel(
         selfRef: selfRef,
         label: label ?? productCategory.label,
         expiryDate: expiryDate ?? DateTime.now().add(Duration(days: 1)),
         donorRef: donorRef,
         image: image ?? productCategory.image,
-        created: created ?? DateTime.now(),
         productCategoryRef: productCategory.selfRef,
         maximumDelayForPickup: productCategory.maximumDelayForPickup,
         size: size ?? productCategory.sizes?.first,
         condition: condition ?? productCategory.conditions?.first,
       );
 
-  factory Donation.fromSnapshot(DocumentSnapshot snapshot) =>
-      _$donationFromSnapshot(snapshot);
-  factory Donation.fromMap(Map<String, dynamic> data) =>
-      _$donationFromMap(data);
-  Map<String, dynamic> toMap() => _$donationToMap(this);
+  factory DonationModel.fromSnapshot(DocumentSnapshot snapshot) =>
+      _$donationModelFromSnapshot(snapshot);
+  factory DonationModel.fromMap(Map<String, dynamic> data) =>
+      _$donationModelFromMap(data);
+  Map<String, dynamic> toMap() => _$donationModelToMap(this);
 }

@@ -2,17 +2,23 @@ import 'package:firestore_annotations/firestore_annotations.dart';
 import 'package:firestore_api/firestore_api.dart';
 part 'voluntary_work_model.g.dart';
 
+class VoluntaryWorkType {
+  static final String delivery = 'delivery';
+}
+
 @FirestoreDocument()
 class VoluntaryWorkModel {
   DocumentReference selfRef;
   DocumentReference centerRef;
-  DocumentReference categoryRef;
   String label;
+  String type;
   String description;
   num impactPoints;
   DateTime created;
   DateTime from;
   DateTime to;
+  Map<String, dynamic> startLocation;
+  Map<String, dynamic> endLocation;
 
 // if accepted
   DocumentReference assignedApplication;
@@ -21,7 +27,6 @@ class VoluntaryWorkModel {
   VoluntaryWorkModel({
     this.selfRef,
     this.centerRef,
-    this.categoryRef,
     this.label,
     this.description,
     this.impactPoints,
@@ -30,6 +35,9 @@ class VoluntaryWorkModel {
     this.to,
     this.assignedApplication,
     this.assignedProfile,
+    this.endLocation,
+    this.startLocation,
+    this.type,
   });
 
   factory VoluntaryWorkModel.fromSnapshot(DocumentSnapshot snapshot) =>

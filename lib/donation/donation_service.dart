@@ -1,124 +1,230 @@
 import 'package:firestore_api/firestore_api.dart';
-import '../utils/image_service.dart';
+import '../utils/compensation.dart';
+import '../center/center_service.dart';
+import '../user/profile_model.dart';
+import '../user/profile_role.dart';
+import '../voluntary_work/voluntary_work_model.dart';
+import 'package:turf/turf.dart';
+import '../actions.dart';
 import '../utils/location_service.dart';
 import 'package:turf/nearest_point.dart';
-import 'package:turf/turf.dart';
-import 'donation_bloc.dart';
 import '../center/center_model.dart';
-import '../user/user_model.dart';
-import '../discussion/discussion_bloc.dart';
-import '../discussion/discussion_service.dart';
 import 'donation_model.dart';
 
-class DonationService {
-  final Firestore firestore;
-  Donation donation;
+class DonationQuery extends DocumentQuery<DonationModel> {
+  DonationQuery(String documentId, Firestore firestore)
+      : super(firestore.collection('donations').document(documentId));
 
-  DonationService(this.firestore, this.donation);
+  @override
+  DonationModel mapQuery(DocumentSnapshot snapshot) =>
+      DonationModel.fromSnapshot(snapshot);
+}
 
-  get discussion =>
-      DiscussionBloc(DiscussionService(firestore, parent: donation.selfRef));
+class DonationsQuery extends CollectionQuery<DonationModel> {
+  DonationsQuery.forDonor(ProfileModel profileModel, Firestore firestore)
+      : super(
+          firestore
+              .collection('donations')
+              .where('donorRef', isEqualTo: profileModel.selfRef),
+        );
+  DonationsQuery.forCenter(CenterModel centerModel, Firestore firestore)
+      : super(
+          firestore
+              .collection('donations')
+              .where('centerRef', isEqualTo: centerModel.selfRef),
+        );
+  @override
+  List<DonationModel> mapQuery(List<DocumentSnapshot> snapshots) =>
+      snapshots.map((docSnap) => DonationModel.fromSnapshot(docSnap)).toList();
+}
 
-  Future<void> create([Donation newDonation]) {
-    donation = newDonation ?? donation;
-    donation.selfRef ??= firestore.collection('donations').document();
+class DonationUpdatesQuery extends CollectionQuery<DonationUpdateModel> {
+  DonationUpdatesQuery(DonationModel donationModel)
+      : super(donationModel.selfRef.collection('updates'));
 
-    return newDonation.selfRef.setData(newDonation.toMap());
+  @override
+  List<DonationUpdateModel> mapQuery(List<DocumentSnapshot> snapshots) =>
+      snapshots
+          .map((docSnap) => DonationUpdateModel.fromSnapshot(docSnap))
+          .toList();
+}
+
+class DonationRolesQuery extends CollectionQuery<ProfileRoleModel> {
+  DonationRolesQuery(DonationModel donationModel)
+      : super(donationModel.selfRef.collection('roles'));
+
+  @override
+  List<ProfileRoleModel> mapQuery(List<DocumentSnapshot> snapshots) => snapshots
+      .map((docSnap) => ProfileRoleModel.fromSnapshot(docSnap))
+      .toList();
+}
+
+class CreateDonationAction extends DocumentAction<DonationModel> {
+  final ProfileModel donor;
+  CreateDonationAction(Firestore firestore, this.donor) : super(firestore);
+
+  @override
+  Future<ActionResult> runActionInternal(model) async {
+    model
+      ..selfRef ??= firestore.collection('donations').document()
+      ..donorRef ??= donor.selfRef;
+    await addSetDataToBatch(model.selfRef, model.toMap());
+
+    var role = ProfileRoleModel(
+      selfRef:
+          model.selfRef.collection('roles').document(donor.selfRef.documentID),
+      profileRef: donor.selfRef,
+      label: donor.label,
+      type: DonationRoleTypes.donor,
+    );
+    await addSetDataToBatch(role.selfRef, role.toMap());
+
+    var update = DonationUpdateModel(
+      selfRef: model.selfRef.collection('updates').document(),
+      created: DateTime.now(),
+      type: DonationUpdateType.created,
+    );
+    await addSetDataToBatch(update.selfRef, update.toMap());
+
+    return ActionResult.success(model.selfRef, 'label', ActionType.create);
+  }
+}
+
+// triggers cloud function if donation is created
+class DonationAssignCenterAction extends DocumentAction<DonationModel> {
+  DonationAssignCenterAction(Firestore firestore) : super(firestore);
+
+  Future<CenterModel> _nearestCenter(DonationModel donationModel) async {
+    var centers = await CentersQuery(firestore).documents;
+    if (centers.isEmpty) {
+      return null;
+    }
+    List<Feature<Point>> centerFeatures =
+        centers.where((center) => center.location != null).map((center) {
+      var feat = Feature<Point>.fromJson(center.location);
+      feat.fields.addAll({'self': center});
+      return feat;
+    }).toList();
+    var collection = FeatureCollection(features: centerFeatures);
+
+    var target = Feature<Point>.fromJson(donationModel.startLocation);
+
+    var resultFeature = nearestPoint(target, collection);
+    return resultFeature.fields['self'];
   }
 
-  Future<void> assignCenter() async {
-    try {
-      var snap = await firestore.collection('centers').getDocuments();
-      List<CenterModel> centers = snap.documents
-          .map((docSnap) => CenterModel.fromSnapshot(docSnap))
-          .toList();
+  String _getLocationMapImage(
+      Map<String, dynamic> start, Map<String, dynamic> end) {
+    var startPoint = Feature<Point>.fromJson(start).geometry;
+    var endPoint = Feature<Point>.fromJson(end).geometry;
+    return LocationImageService().getDirectionsImage(startPoint, endPoint);
+  }
 
-      if (donation.startLocation == null) {
-        return; // TODO throw
-      }
-      var targetPoint = Feature.fromJson(donation.startLocation);
-      var nearest = nearestPoint(
-        targetPoint,
-        FeatureCollection<Point>(
-          features:
-              centers.map((e) => Feature<Point>.fromJson(e.location)).toList(),
-        ),
-      );
-      var nearestCenter = centers.singleWhere((element) =>
-          Feature<Point>.fromJson(element.location).geometry ==
-          nearest.geometry);
-
-      var mapboxUrl = PositionService()
-          .getDirectionsImage(targetPoint.geometry, nearest.geometry);
-      var cloudinaryUrl = await ImageService().uploadfromUrl(mapboxUrl);
-
-      donation
-        ..centerRef = nearestCenter.selfRef
+  @override
+  Future<ActionResult> runActionInternal(DonationModel model) async {
+    var nearestCenter = await _nearestCenter(model);
+    if (nearestCenter != null) {
+      model
+        ..endLocation = nearestCenter.location
+        ..deliveryMapImage =
+            _getLocationMapImage(model.startLocation, model.endLocation)
         ..centerLabel = nearestCenter.label
-        ..deliveryMapImage = cloudinaryUrl;
+        ..centerRef = nearestCenter.selfRef;
+      await addUpdateToBatch(model.selfRef, model.toMap());
 
-      await donation.selfRef.update(donation.toMap());
-    } catch (e) {
-      print(e); // TODO throw
+      var roles = await CenterRolesQuery(nearestCenter.selfRef).documents;
+
+      for (var role in roles) {
+        var donationRole = ProfileRoleModel(
+          selfRef: model.selfRef
+              .collection('roles')
+              .document(role.selfRef.documentID),
+          label: role.label,
+          profileRef: role.profileRef,
+          type: DonationRoleTypes.centerAdmin,
+        );
+        await addSetDataToBatch(donationRole.selfRef, donationRole.toMap());
+      }
+
+      var update = DonationUpdateModel(
+        selfRef: model.selfRef.collection('updates').document(),
+        created: DateTime.now(),
+        type: DonationUpdateType.assignedToCenter,
+      );
+      await addSetDataToBatch(update.selfRef, update.toMap());
+
+      return ActionResult.success(
+        model.selfRef,
+        'DonationModel',
+        ActionType.update,
+      );
+    } else {
+      return ActionResult.failure(
+        model.selfRef,
+        'DonationModel',
+        ActionType.update,
+        message: 'could not assign nearest center',
+      );
     }
   }
+}
 
-  Future<void> needsDeliveryService(bool needsDeliveryService) async {
-    donation.needsDeliveryService = needsDeliveryService;
+class DonationNeedsDeliveryService extends DocumentAction<DonationModel> {
+  DonationNeedsDeliveryService(Firestore firestore) : super(firestore);
 
-    // TODO create delivery service
+  @override
+  Future<ActionResult> runActionInternal(DonationModel model) async {
+    var update = DonationUpdateModel(
+      selfRef: model.selfRef.collection('updates').document(),
+      created: DateTime.now(),
+      type: DonationUpdateType.needsDelivery,
+    );
+    await addSetDataToBatch(update.selfRef, update.toMap());
+
+    return ActionResult.success(
+      model.selfRef,
+      'DonationModel',
+      ActionType.update,
+    );
   }
+}
 
-  Future<void> deliveryServiceStaffed(DocumentReference assignedCollectorRef) {
-    donation.assignedCollectorRef = assignedCollectorRef;
-    return donation.selfRef.update(donation.toMap());
+// triggers cloud function if update needsDelivery is created
+class DonationCreateDeliveryService extends DocumentAction<DonationModel> {
+  DonationCreateDeliveryService(Firestore firestore) : super(firestore);
+
+  @override
+  Future<ActionResult> runActionInternal(DonationModel model) async {
+    _createLabel() => 'deliver ${model.label} to ${model.centerLabel}';
+
+    var deliveryShift = VoluntaryWorkModel(
+      selfRef: firestore.collection('voluntaryWork').document(),
+      assignedApplication: null,
+      assignedProfile: null,
+      from: DateTime.now(),
+      to: DateTime.now().add(Duration(hours: model.maximumDelayForPickup)),
+      type: VoluntaryWorkType.delivery,
+      centerRef: model.centerRef,
+      created: DateTime.now(),
+      impactPoints: CompensationCalculator.calculateDelivery(model),
+      label: _createLabel(),
+      startLocation: model.startLocation,
+      endLocation: model.endLocation,
+    );
+
+    await addSetDataToBatch(deliveryShift.selfRef, deliveryShift.toMap());
+
+    var update = DonationUpdateModel(
+      selfRef: model.selfRef.collection('updates').document(),
+      created: DateTime.now(),
+      type: DonationUpdateType.openForApplication,
+    );
+    await addSetDataToBatch(update.selfRef, update.toMap());
+
+    return ActionResult.success(
+      model.selfRef,
+      'DonationModel',
+      ActionType.update,
+    );
   }
-
-  Future<void> pickedUp() async {}
-  Future<void> delivered() async {}
-  Future<void> deliveryVerified() async {}
-
-  Stream<DonationEvent> get events => donation.selfRef.snapshots.map(
-        (snap) => DonationEvent.fromDonationChange(
-          donation,
-          donation = Donation.fromSnapshot(snap),
-        ),
-      );
-}
-
-class DonationListService {
-  final Firestore firestore;
-  final Query query;
-  DonationListService._(this.firestore, this.query);
-  factory DonationListService.forDonor(Firestore firestore, UserModel user) =>
-      _DonorDonationListService(firestore, user);
-
-  factory DonationListService.forCenter(
-          Firestore firestore, CenterModel center) =>
-      _CenterDonationListService(firestore, center);
-
-  Stream<List<Donation>> donationStream() => query.snapshots().map(
-        (snap) =>
-            snap.documents.map((doc) => Donation.fromSnapshot(doc)).toList(),
-      );
-}
-
-class _DonorDonationListService extends DonationListService {
-  _DonorDonationListService(Firestore firestore, UserModel user)
-      : super._(
-            firestore,
-            firestore
-                .collection('donations')
-                .where('donorRef', isEqualTo: user.selfRef));
-  Future<void> setDonation(Donation donation) =>
-      firestore.collection('donations').document().setData(donation.toMap());
-}
-
-class _CenterDonationListService extends DonationListService {
-  _CenterDonationListService(Firestore firestore, CenterModel center)
-      : super._(
-            firestore,
-            firestore
-                .collection('donations')
-                .where('centerRef', isEqualTo: center.selfRef));
 }

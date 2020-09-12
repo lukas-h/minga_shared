@@ -4,10 +4,10 @@ import 'package:turf/turf.dart';
 
 import '../helpers.dart';
 
-class PositionService {
+class LocationImageService {
   final StaticImage _staticImage;
   final PlacesSearch _placesSearch;
-  PositionService({String language = 'EN'})
+  LocationImageService({String language = 'EN'})
       : _staticImage = StaticImage(apiKey: MAPBOX_KEY),
         _placesSearch = PlacesSearch(
           apiKey: MAPBOX_KEY,

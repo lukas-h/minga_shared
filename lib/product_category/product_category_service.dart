@@ -2,6 +2,7 @@ import 'package:firestore_api/firestore_api.dart';
 
 import 'product_category.dart';
 
+// TODO migrate to new actions
 class ProductService {
   final Firestore firestore;
   final CollectionReference coll;
