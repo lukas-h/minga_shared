@@ -8,7 +8,7 @@ enum ActionType { create, update, delete }
 class ActionResult {
   final ActionType type;
   final DocumentReference selfRef;
-  final bool success;
+  final bool successful;
   final String message;
   final String label;
   ActionResult.success(
@@ -16,13 +16,13 @@ class ActionResult {
     this.label,
     this.type, {
     this.message,
-  }) : success = true;
+  }) : successful = true;
   ActionResult.failure(
     this.selfRef,
     this.label,
     this.type, {
     this.message,
-  }) : success = false;
+  }) : successful = false;
 }
 
 abstract class DocumentAction<T> with BatchHelper {
@@ -39,6 +39,16 @@ abstract class DocumentAction<T> with BatchHelper {
   }
 }
 
+abstract class DocumentTransaction<T> {
+  final Firestore firestore;
+  DocumentTransaction(this.firestore);
+  Future<ActionResult> runActionInternal(T model, Transaction t);
+  Future<ActionResult> runAction(T model) {
+    return firestore.runTransaction<ActionResult>(
+        (Transaction t) => runActionInternal(model, t));
+  }
+}
+
 abstract class DocumentQuery<T> {
   final DocumentReference query;
 
@@ -49,6 +59,8 @@ abstract class DocumentQuery<T> {
   Stream<T> get stream => query.snapshots.map((snap) => mapQuery(snap));
 
   Future<T> get document async => mapQuery(await query.document);
+
+  Future<bool> get exists async => (await query.document).exists;
 }
 
 abstract class DocumentQueryHolder<T> {

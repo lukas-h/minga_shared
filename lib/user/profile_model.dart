@@ -16,8 +16,11 @@ class ProfileModel {
   String label;
   String phone;
   String email;
+  @FirestoreAttribute(nullable: false)
   num totalImpact;
   Map<String, dynamic> location;
+
+  bool userDeleted;
 
   ProfileModel({
     this.anonymizeChats,
@@ -31,6 +34,7 @@ class ProfileModel {
     this.showPhone,
     this.totalImpact,
     this.location,
+    this.userDeleted,
   });
 
   factory ProfileModel.fromSnapshot(DocumentSnapshot snapshot) =>

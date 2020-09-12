@@ -6,17 +6,13 @@ part 'user_model.g.dart';
 @FirestoreDocument()
 class UserModel {
   DocumentReference selfRef;
+  DocumentReference profileRef;
 
   String label; // name
-
   String email;
-
   String phone;
 
-  Map<String, dynamic> location;
-
   num impactBalance;
-
   num totalImpact;
 
   UserModel({
@@ -24,9 +20,9 @@ class UserModel {
     this.label,
     this.email,
     this.phone,
-    this.location,
     this.impactBalance,
     this.totalImpact,
+    this.profileRef,
   });
 
   factory UserModel.fromSnapshot(DocumentSnapshot snapshot) =>

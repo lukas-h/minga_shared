@@ -20,18 +20,3 @@ class CenterModel {
       _$centerModelFromMap(data);
   Map<String, dynamic> toMap() => _$centerModelToMap(this);
 }
-
-@FirestoreDocument()
-class CenterRoleModel {
-  DocumentReference selfRef; // reference of the profile
-  String label;
-  CenterRoleModel({
-    this.selfRef,
-    this.label,
-  });
-  factory CenterRoleModel.fromSnapshot(DocumentSnapshot snapshot) =>
-      _$centerRoleModelFromSnapshot(snapshot);
-  factory CenterRoleModel.fromMap(Map<String, dynamic> data) =>
-      _$centerRoleModelFromMap(data);
-  Map<String, dynamic> toMap() => _$centerRoleModelToMap(this);
-}

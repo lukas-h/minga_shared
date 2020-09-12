@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firestore_api/firestore_api.dart';
+import '../user/profile_model.dart';
+import '../user/user_service.dart';
 import '../utils/form_validator.dart';
 import '../user/user_model.dart';
 
@@ -20,8 +22,9 @@ class AuthProgressState extends AuthState {}
 
 class AuthSuccessState extends AuthState {
   final UserModel user;
+  final ProfileModel profile;
 
-  AuthSuccessState(this.user);
+  AuthSuccessState(this.user, this.profile);
 }
 
 class AuthVerifyPhoneState extends AuthState {}
@@ -64,28 +67,41 @@ abstract class AuthCubit extends Cubit<AuthState> {
   AuthCubit(this.firestore) : super(AuthProgressState());
 
   _emitStateOnLogin(AuthUser user) async {
-    // TODO implement
-    /* 
-    var mingaUser = UserModel(
-      selfRef: _userService.collection.document(user.uid),
-      email: user.email,
-      label: user.label,
-      location: null,
-      phone: user.phone,
-    );
-
-    if (await _userService.exists(mingaUser)) {
-      mingaUser = await _userService.getData(mingaUser);
-
-      if (mingaUser.location == null || mingaUser.label == null) {
-        emit(AuthOnboardingState(mingaUser));
+    var userQuery = UserQuery.fromAuthUser(user, firestore);
+    if (await userQuery.exists) {
+      var profileRef = (await userQuery.document).profileRef;
+      if (profileRef == null) {
+        emit(AuthOnboardingState(await userQuery.document));
       } else {
-        emit(AuthSuccessState(mingaUser));
+        var profileQuery = ProfileQuery(profileRef);
+        emit(AuthSuccessState(
+            await userQuery.document, await profileQuery.document));
       }
     } else {
-      await _userService.setData(mingaUser);
-      emit(AuthOnboardingState(mingaUser));
-    }*/
+      var result = await CreateUserAction(firestore).runAction(user);
+      if (result.successful) {
+        emit(AuthOnboardingState(await userQuery.document));
+      } else {
+        emit(AuthFailureState(result.message));
+      }
+    }
+  }
+
+  finishOnboarding(UserModel user, ProfileModel profile) async {
+    try {
+      emit(AuthProgressState());
+      var result =
+          await FinishOnboardingAction(firestore, user).runAction(profile);
+      if (result.successful) {
+        emit(AuthSuccessState(user, profile));
+      } else {
+        emit(AuthFailureState(result.message));
+      }
+    } catch (e) {
+      print(e);
+      emit(AuthFailureState('error onboarding'));
+      emit(LoginPromptState());
+    }
   }
 
   void tryLoginImpl(OnAuthStateChange stateChange);
@@ -190,18 +206,6 @@ abstract class AuthCubit extends Cubit<AuthState> {
     } catch (e) {
       print(e);
       emit(AuthFailureState('error logging in'));
-      emit(LoginPromptState());
-    }
-  }
-
-  finishOnboarding(UserModel user) async {
-    try {
-      emit(AuthProgressState());
-      await user.selfRef.update(user.toMap());
-      emit(AuthSuccessState(user));
-    } catch (e) {
-      print(e);
-      emit(AuthFailureState('error onboarding'));
       emit(LoginPromptState());
     }
   }
