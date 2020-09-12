@@ -1,6 +1,6 @@
 import 'package:firestore_api/firestore_api.dart';
-import 'package:minga_shared/user/profile_model.dart';
-import 'package:minga_shared/user/user_model.dart';
+import 'profile_model.dart';
+import 'user_model.dart';
 import '../actions.dart';
 import 'transaction_model.dart';
 

@@ -1,5 +1,5 @@
 import 'package:firestore_api/firestore_api.dart';
-import 'package:minga_shared/auth/auth_bloc.dart';
+import '../auth/auth_bloc.dart';
 import 'profile_model.dart';
 import '../actions.dart';
 import 'profile_role.dart';
