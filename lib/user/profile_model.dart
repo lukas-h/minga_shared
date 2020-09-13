@@ -16,7 +16,7 @@ class ProfileModel {
   String label;
   String phone;
   String email;
-  @FirestoreAttribute(nullable: false)
+
   num totalImpact;
   Map<String, dynamic> location;
 
