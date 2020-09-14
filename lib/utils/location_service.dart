@@ -32,8 +32,8 @@ class LocationImageService {
   }) =>
       _staticImage.getStaticUrlWithPolyline(
         bearing: 180,
-        point1: start.coordinates,
-        point2: end.coordinates,
+        point1: start.coordinates.toSigned(),
+        point2: end.coordinates.toSigned(),
         marker1: MapBoxMarker(
             markerColor: Colors.primary200,
             markerLetter: 'd',
@@ -44,10 +44,13 @@ class LocationImageService {
             markerSize: MarkerSize.SMALL),
         height: height,
         width: width,
-        zoomLevel: 14,
+        zoomLevel: 8,
         style: MapBoxStyle.Streets,
         render2x: true,
-        center: midpoint(start, end).coordinates,
+        center: midpoint(
+          start,
+          end,
+        ).coordinates.toSigned(),
       );
   String getPointImage(
     Point point, {
@@ -55,7 +58,7 @@ class LocationImageService {
     int width = 500,
   }) =>
       StaticImage(apiKey: MAPBOX_KEY).getStaticUrlWithMarker(
-        center: point.coordinates,
+        center: point.coordinates.toSigned(),
         style: MapBoxStyle.Streets,
         zoomLevel: 11,
         height: 100,
