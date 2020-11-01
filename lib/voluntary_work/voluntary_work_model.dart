@@ -3,8 +3,28 @@ import 'package:firestore_api/firestore_api.dart';
 part 'voluntary_work_model.g.dart';
 
 class VoluntaryWorkType {
-  static final String delivery = 'delivery';
+  static const String delivery = 'delivery';
+  static const String serveFood = 'serveFood';
+  static const String prepareFood = 'prepareFood';
+  static const String clean = 'clean';
+  static const String repair = 'repair';
+  static const String gardening = 'gardening';
+  static const String coordinate = 'coordinate';
+  static const String healthcare = 'healthcare';
+  static const String teaching = 'teaching';
 }
+
+Map<String, String> voluntaryWorkLabels = {
+  VoluntaryWorkType.clean: 'Cleaning',
+  VoluntaryWorkType.serveFood: 'Serve Food',
+  VoluntaryWorkType.prepareFood: 'Prepare Food',
+  VoluntaryWorkType.delivery: 'Deliver',
+  VoluntaryWorkType.gardening: 'Gardening',
+  VoluntaryWorkType.teaching: 'Help Teach',
+  VoluntaryWorkType.repair: 'Repair',
+  VoluntaryWorkType.coordinate: 'Coordinate',
+  VoluntaryWorkType.healthcare: 'Healthcare'
+};
 
 @FirestoreDocument()
 class VoluntaryWorkModel {
@@ -17,6 +37,8 @@ class VoluntaryWorkModel {
   DateTime created;
   DateTime from;
   DateTime to;
+  DateTime started;
+  DateTime finished;
   Map<String, dynamic> startLocation;
   Map<String, dynamic> endLocation;
 
@@ -38,6 +60,8 @@ class VoluntaryWorkModel {
     this.endLocation,
     this.startLocation,
     this.type,
+    this.finished,
+    this.started,
   });
 
   factory VoluntaryWorkModel.fromSnapshot(DocumentSnapshot snapshot) =>
