@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bloc/bloc.dart';
 import 'package:firestore_api/firestore_api.dart';
 
 enum ActionType { create, update, delete }
@@ -99,6 +100,36 @@ abstract class CollectionQuery<T> {
       query.snapshots().map<List<T>>((snap) => mapQuery(snap?.documents));
   Future<List<T>> get documents async =>
       mapQuery((await query.getDocuments())?.documents);
+}
+
+abstract class CollectionCubitState<T> {}
+
+class LoadingState<T> extends CollectionCubitState<T> {}
+
+class FailureState<T> extends CollectionCubitState<T> {
+  final String message;
+
+  FailureState(this.message);
+}
+
+class SuccessState<T> extends CollectionCubitState<T> {
+  final List<T> snapshot;
+
+  SuccessState(this.snapshot);
+}
+
+class CollectionBloc<T extends CollectionQuery<R>, R>
+    extends Cubit<CollectionCubitState<R>> {
+  StreamSubscription subscription;
+  final T query;
+  CollectionBloc(this.query) : super(LoadingState<R>());
+  subscribe() {
+    subscription = query.stream.listen((List<R> snapshot) {
+      SuccessState<R>(snapshot);
+    }, onError: () {
+      FailureState<R>('Error');
+    });
+  }
 }
 
 abstract class CollectionHolder<T> implements Iterable<T> {
