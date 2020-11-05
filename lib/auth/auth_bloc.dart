@@ -104,6 +104,34 @@ abstract class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  updateUser(UserModel user, ProfileModel profile) async {
+    try {
+      var result = await UpdateUserAction(firestore, user).runAction(profile);
+      if (result.successful) {
+        emit(AuthSuccessState(user, profile));
+      } else {
+        emit(AuthFailureState(result.message));
+      }
+    } catch (e) {
+      print(e);
+      emit(AuthFailureState('error updating'));
+    }
+  }
+
+  deleteUser(UserModel user) async {
+    try {
+      var result = await DeleteUserAction(firestore).runAction(user);
+      if (result.successful) {
+        emit(LoginPromptState());
+      } else {
+        emit(AuthFailureState(result.message));
+      }
+    } catch (e) {
+      print(e);
+      emit(AuthFailureState('error deleting'));
+    }
+  }
+
   void tryLoginImpl(OnAuthStateChange stateChange);
   tryLogin() {
     emit(AuthProgressState());
