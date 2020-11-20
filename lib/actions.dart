@@ -122,13 +122,17 @@ class CollectionBloc<T extends CollectionQuery<R>, R>
     extends Cubit<CollectionCubitState<R>> {
   StreamSubscription subscription;
   final T query;
-  CollectionBloc(this.query) : super(LoadingState<R>());
-  subscribe() {
+  CollectionBloc(this.query) : super(LoadingState<R>()) {
     subscription = query.stream.listen((List<R> snapshot) {
       SuccessState<R>(snapshot);
     }, onError: () {
       FailureState<R>('Error');
     });
+  }
+  @override
+  Future<void> close() {
+    subscription?.cancel();
+    return super.close();
   }
 }
 
